@@ -28,8 +28,13 @@ function SignUpFormContent() {
     router.push(pathname + "?" + createQueryString("type", type));
   };
   
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSignUp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError(null);
+    setIsLoading(true);
     
     const formData = new FormData(e.currentTarget);
     const fname = formData.get("fname") as string;
@@ -62,12 +67,17 @@ function SignUpFormContent() {
           router.push(`/signup/jmb-details?email=${emailParam}`);
         }
       } else {
-        console.error("Registration failed");
-        alert("Registration failed. Please try again.");
+        // Parse error message from backend
+        const errorData = await response.json();
+        const errorMessage = errorData.detail || "Registration failed. Please try again.";
+        console.error("Registration failed:", errorMessage);
+        setError(errorMessage);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("An error occurred. Please try again.");
+      setError("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
   
@@ -121,6 +131,13 @@ function SignUpFormContent() {
                 Contractor
               </button>
             </div>
+
+            {/* Error Display */}
+            {error && (
+              <div className="p-4 mb-6 text-sm text-red-800 bg-red-100 border border-red-200 rounded-lg dark:bg-red-900/20 dark:text-red-400 dark:border-red-800">
+                {error}
+              </div>
+            )}
 
             <form onSubmit={handleSignUp}>
               <input type="hidden" name="userType" value={userType} />
@@ -194,8 +211,12 @@ function SignUpFormContent() {
                 </div>
                 {/* <!-- Button --> */}
                 <div>
-                  <button className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600">
-                    Sign Up
+                  <button 
+                    type="submit"
+                    disabled={isLoading || !isChecked}
+                    className="flex items-center justify-center w-full px-4 py-3 text-sm font-medium text-white transition rounded-lg bg-brand-500 shadow-theme-xs hover:bg-brand-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isLoading ? "Signing Up..." : "Sign Up"}
                   </button>
                 </div>
               </div>
