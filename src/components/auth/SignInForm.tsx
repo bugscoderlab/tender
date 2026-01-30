@@ -25,6 +25,8 @@ export default function SignInForm() {
       return;
     }
 
+    console.log("Attempting login with:", { email }); // Debug log
+
     // Construct x-www-form-urlencoded body
     const body = new URLSearchParams();
     body.append("grant_type", "password");
@@ -35,6 +37,7 @@ export default function SignInForm() {
     body.append("client_secret", "");
 
     try {
+      console.log("Sending request to:", "http://localhost:8000/users/login"); // Debug log
       const response = await fetch("http://localhost:8000/users/login", {
         method: "POST",
         headers: {
@@ -44,8 +47,11 @@ export default function SignInForm() {
         body: body.toString(),
       });
 
+      console.log("Response status:", response.status); // Debug log
+
       if (response.ok) {
         const data = await response.json();
+        console.log("Login successful, user role:", data.user.role); // Debug log
         
         // Store auth details
         if (typeof window !== "undefined") {
@@ -65,11 +71,12 @@ export default function SignInForm() {
         }
       } else {
         const errorData = await response.json();
+        console.error("Login failed:", errorData); // Debug log
         alert(`Login failed: ${errorData.detail || "Invalid credentials"}`);
       }
     } catch (error) {
       console.error("Login error:", error);
-      alert("An error occurred during login. Please try again.");
+      alert("An error occurred during login. Please try again. Check browser console for details.");
     }
   };
 
@@ -140,7 +147,7 @@ export default function SignInForm() {
                   </Link>
                 </div>
                 <div>
-                  <Button className="w-full" size="sm">
+                  <Button type="submit" className="w-full" size="sm">
                     Sign in
                   </Button>
                 </div>
