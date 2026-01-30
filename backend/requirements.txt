@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+sqlalchemy
+psycopg2-binary; platform_system == "Darwin"
+psycopg2; platform_system == "Windows"
+pydantic
+pydantic[email]
+passlib
+python-jose
+bcrypt
+argon2_cffi
+python-dotenv
+python-multipart
