@@ -21,7 +21,7 @@ export default function Stepper({ steps, currentStep, onStepClick }: StepperProp
         {steps.map((step, index) => {
           const isCompleted = currentStep > step.id;
           const isCurrent = currentStep === step.id;
-          const isClickable = onStepClick; /
+          const isClickable = onStepClick; 
 
           return (
             <React.Fragment key={step.id}>
