@@ -11,11 +11,18 @@ interface Bid {
   user_id: number;
   proposed_amount: number;
   company_name: string;
+  company_registration?: string;
+  years_of_experience?: number;
+  timeline?: number;
+  proposal_document?: string;
+  cover_letter?: string;
   status: string;
   created_at: string;
   tender: {
     title: string;
     service_type: string;
+    min_budget?: number;
+    max_budget?: number;
   };
 }
 
@@ -139,7 +146,9 @@ export default function AllBidsPage() {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
       month: "short",
-      day: "numeric"
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit"
     });
   };
 
@@ -154,12 +163,12 @@ export default function AllBidsPage() {
   const stats = getBidStats();
 
   return (
-    <div className="p-6 mx-auto max-w-7xl">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+    <div className="max-w-7xl mx-auto">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
           All Bids
         </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
+        <p className="text-base text-gray-500 dark:text-gray-400">
           View and manage all bids across your tenders
         </p>
       </div>
@@ -238,54 +247,122 @@ export default function AllBidsPage() {
               key={bid.id}
               className="bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800 p-6"
             >
-              <div className="flex justify-between items-start mb-4">
-                <div>
+              {/* Header with Tender Title and Status */}
+              <div className="flex justify-between items-start mb-4 pb-4 border-b border-gray-200 dark:border-gray-800">
+                <div className="flex-1">
                   <Link 
                     href={`/jmb/tender/${bid.tender_id}/bids`}
-                    className="text-lg font-semibold text-gray-800 dark:text-white hover:text-brand-500"
+                    className="text-lg font-semibold text-gray-800 dark:text-white hover:text-blue-600 transition-colors inline-block mb-1"
                   >
                     {bid.tender.title}
                   </Link>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
                     {bid.tender.service_type}
                   </p>
-                  <h3 className="text-base font-medium text-gray-700 dark:text-gray-300 mt-2">
-                    {bid.company_name}
-                  </h3>
                 </div>
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-brand-500">
-                    {formatCurrency(bid.proposed_amount)}
+                <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(bid.status)}`}>
+                  {bid.status.toUpperCase()}
+                </span>
+              </div>
+
+              {/* Company Information */}
+              <div className="mb-4">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-2">
+                  {bid.company_name}
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                  {bid.company_registration && (
+                    <div>
+                      <span className="text-gray-500 dark:text-gray-400">Registration: </span>
+                      <span className="text-gray-800 dark:text-white font-medium">{bid.company_registration}</span>
+                    </div>
+                  )}
+                  {bid.years_of_experience !== undefined && (
+                    <div>
+                      <span className="text-gray-500 dark:text-gray-400">Experience: </span>
+                      <span className="text-gray-800 dark:text-white font-medium">{bid.years_of_experience} years</span>
+                    </div>
+                  )}
+                  {bid.timeline && (
+                    <div>
+                      <span className="text-gray-500 dark:text-gray-400">Timeline: </span>
+                      <span className="text-gray-800 dark:text-white font-medium">{bid.timeline} months</span>
+                    </div>
+                  )}
+                  <div>
+                    <span className="text-gray-500 dark:text-gray-400">Submitted: </span>
+                    <span className="text-gray-800 dark:text-white font-medium">{formatDate(bid.created_at)}</span>
                   </div>
-                  <span className={`inline-block mt-2 px-3 py-1 text-xs font-medium rounded-full ${getStatusColor(bid.status)}`}>
-                    {bid.status.charAt(0).toUpperCase() + bid.status.slice(1)}
-                  </span>
                 </div>
               </div>
 
-              <div className="flex items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Submitted on {formatDate(bid.created_at)}
-                </p>
-                
+              {/* Bid Amount */}
+              <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg">
+                <div className="text-sm text-gray-600 dark:text-gray-400 mb-1">Proposed Amount</div>
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {formatCurrency(bid.proposed_amount)}
+                </div>
+                {(bid.tender.min_budget || bid.tender.max_budget) && (
+                  <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Budget: {formatCurrency(bid.tender.min_budget || 0)} - {formatCurrency(bid.tender.max_budget || 0)}
+                  </div>
+                )}
+              </div>
+
+              {/* Cover Letter */}
+              {bid.cover_letter && (
+                <div className="mb-4">
+                  <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cover Letter:</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-3">
+                    {bid.cover_letter}
+                  </p>
+                </div>
+              )}
+
+              {/* Documents */}
+              {bid.proposal_document && (
+                <div className="mb-4">
+                  <a
+                    href={bid.proposal_document}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-sm text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    View Proposal Document
+                  </a>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-200 dark:border-gray-800">
+                <Link href={`/jmb/tender/${bid.tender_id}/bids`}>
+                  <Button variant="outline" className="text-sm">
+                    View All Bids for This Tender
+                  </Button>
+                </Link>
                 {bid.status === "pending" && (
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => handleUpdateBidStatus(bid.id, "rejected")}
-                      disabled={updatingBidId === bid.id}
-                      startIcon={<CloseIcon />}
-                    >
-                      {updatingBidId === bid.id ? "Updating..." : "Reject"}
-                    </Button>
+                  <>
                     <Button
                       onClick={() => handleUpdateBidStatus(bid.id, "approved")}
                       disabled={updatingBidId === bid.id}
-                      startIcon={<CheckCircleIcon />}
+                      className="text-sm bg-emerald-600 hover:bg-emerald-700"
                     >
+                      <CheckCircleIcon className="w-4 h-4 mr-1" />
                       {updatingBidId === bid.id ? "Updating..." : "Approve"}
                     </Button>
-                  </div>
+                    <Button
+                      onClick={() => handleUpdateBidStatus(bid.id, "rejected")}
+                      disabled={updatingBidId === bid.id}
+                      variant="outline"
+                      className="text-sm text-rose-600 border-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20"
+                    >
+                      <CloseIcon className="w-4 h-4 mr-1" />
+                      Reject
+                    </Button>
+                  </>
                 )}
               </div>
             </div>

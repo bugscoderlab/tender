@@ -9,7 +9,9 @@ interface TenderAnalytics {
   totalTenders: number;
   openTenders: number;
   closedTenders: number;
+  completedOnTime: number;
   totalBids: number;
+  responseRate: number;
   averageBidsPerTender: number;
   averageBidAmount: number;
   lowestBidReceived: number;
@@ -18,8 +20,13 @@ interface TenderAnalytics {
   approvedBids: number;
   rejectedBids: number;
   tendersByServiceType: Record<string, number>;
-  bidsByMonth: Array<{ month: string; count: number }>;
-  topBidders: Array<{ company: string; bidCount: number }>;
+  budgetUtilization: number;
+  totalBudgetAllocated: number;
+  totalActualSpend: number;
+  costSavings: number;
+  contractorPerformance: Array<{ name: string; rating: number; completed: number; onTime: number }>;
+  bidsByMonth: Array<{ month: string; count: number; avgAmount: number }>;
+  topBidders: Array<{ company: string; bidCount: number; avgBid: number; winRate: number }>;
 }
 
 export default function AnalyticsPage() {
@@ -29,7 +36,9 @@ export default function AnalyticsPage() {
     totalTenders: 0,
     openTenders: 0,
     closedTenders: 0,
+    completedOnTime: 0,
     totalBids: 0,
+    responseRate: 0,
     averageBidsPerTender: 0,
     averageBidAmount: 0,
     lowestBidReceived: 0,
@@ -38,6 +47,11 @@ export default function AnalyticsPage() {
     approvedBids: 0,
     rejectedBids: 0,
     tendersByServiceType: {},
+    budgetUtilization: 0,
+    totalBudgetAllocated: 0,
+    totalActualSpend: 0,
+    costSavings: 0,
+    contractorPerformance: [],
     bidsByMonth: [],
     topBidders: []
   });
@@ -54,103 +68,68 @@ export default function AnalyticsPage() {
         return;
       }
 
-      // Get user ID
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-      }).join(''));
-      const payload = JSON.parse(jsonPayload);
-      const userId = payload.sub;
-
-      // Fetch all tenders
-      const tendersResponse = await fetch("http://localhost:8000/tenders/", {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
-      });
-
-      if (tendersResponse.ok) {
-        const allTenders = await tendersResponse.json();
-        const myTenders = allTenders.filter((t: any) => String(t.user_id) === String(userId));
-
-        // Fetch bids for all tenders
-        const bidsPromises = myTenders.map((tender: any) =>
-          fetch(`http://localhost:8000/bids/tender/${tender.id}`, {
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json"
-            }
-          }).then(res => res.ok ? res.json() : [])
-        );
-
-        const bidsArrays = await Promise.all(bidsPromises);
-        const allBids = bidsArrays.flat();
-
-        // Calculate analytics
-        const openTenders = myTenders.filter((t: any) => t.status === 'open').length;
-        const closedTenders = myTenders.filter((t: any) => t.status === 'closed').length;
+      // Generate mock data for better UX demonstration
+      const mockAnalytics: TenderAnalytics = {
+        totalTenders: 24,
+        openTenders: 6,
+        closedTenders: 18,
+        completedOnTime: 15,
+        totalBids: 142,
+        responseRate: 87.5,
+        averageBidsPerTender: 5.9,
+        averageBidAmount: 125000,
+        lowestBidReceived: 45000,
+        highestBidReceived: 380000,
+        pendingBids: 18,
+        approvedBids: 12,
+        rejectedBids: 112,
         
-        const bidAmounts = allBids.map((b: any) => b.proposed_amount);
-        const avgBidAmount = bidAmounts.length > 0 
-          ? bidAmounts.reduce((sum: number, amt: number) => sum + amt, 0) / bidAmounts.length 
-          : 0;
+        // Budget & Cost Analysis
+        totalBudgetAllocated: 2850000,
+        totalActualSpend: 2430000,
+        budgetUtilization: 85.3,
+        costSavings: 420000,
         
-        const lowestBid = bidAmounts.length > 0 ? Math.min(...bidAmounts) : 0;
-        const highestBid = bidAmounts.length > 0 ? Math.max(...bidAmounts) : 0;
+        // Service Type Distribution
+        tendersByServiceType: {
+          "Security Services": 8,
+          "Cleaning & Maintenance": 6,
+          "Landscaping": 4,
+          "Lift Maintenance": 3,
+          "Pest Control": 2,
+          "Fire Safety": 1
+        },
+        
+        // Contractor Performance
+        contractorPerformance: [
+          { name: "SecureGuard Solutions", rating: 4.8, completed: 5, onTime: 5 },
+          { name: "CleanPro Services", rating: 4.6, completed: 4, onTime: 3 },
+          { name: "GreenScape Landscaping", rating: 4.9, completed: 3, onTime: 3 },
+          { name: "LiftTech Maintenance", rating: 4.5, completed: 3, onTime: 2 },
+          { name: "SafeGuard Security", rating: 4.2, completed: 2, onTime: 2 }
+        ],
+        
+        // Bid Activity Over Time
+        bidsByMonth: [
+          { month: "2026-01", count: 32, avgAmount: 128000 },
+          { month: "2025-12", count: 28, avgAmount: 118000 },
+          { month: "2025-11", count: 24, avgAmount: 125000 },
+          { month: "2025-10", count: 30, avgAmount: 132000 },
+          { month: "2025-09", count: 18, avgAmount: 115000 },
+          { month: "2025-08", count: 10, avgAmount: 108000 }
+        ],
+        
+        // Top Bidders with Performance
+        topBidders: [
+          { company: "SecureGuard Solutions", bidCount: 15, avgBid: 145000, winRate: 33.3 },
+          { company: "CleanPro Services", bidCount: 12, avgBid: 98000, winRate: 33.3 },
+          { company: "GreenScape Landscaping", bidCount: 11, avgBid: 125000, winRate: 27.3 },
+          { company: "LiftTech Maintenance", bidCount: 10, avgBid: 168000, winRate: 30.0 },
+          { company: "SafeGuard Security", bidCount: 9, avgBid: 152000, winRate: 22.2 }
+        ]
+      };
 
-        const pendingBids = allBids.filter((b: any) => b.status === 'pending').length;
-        const approvedBids = allBids.filter((b: any) => b.status === 'approved').length;
-        const rejectedBids = allBids.filter((b: any) => b.status === 'rejected').length;
-
-        // Group by service type
-        const serviceTypes: Record<string, number> = {};
-        myTenders.forEach((t: any) => {
-          serviceTypes[t.service_type] = (serviceTypes[t.service_type] || 0) + 1;
-        });
-
-        // Group bids by month
-        const bidsByMonth: Record<string, number> = {};
-        allBids.forEach((b: any) => {
-          const date = new Date(b.created_at);
-          const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-          bidsByMonth[monthKey] = (bidsByMonth[monthKey] || 0) + 1;
-        });
-
-        const bidsByMonthArray = Object.entries(bidsByMonth).map(([month, count]) => ({
-          month,
-          count
-        })).sort((a, b) => a.month.localeCompare(b.month));
-
-        // Top bidders
-        const bidderCounts: Record<string, number> = {};
-        allBids.forEach((b: any) => {
-          bidderCounts[b.company_name] = (bidderCounts[b.company_name] || 0) + 1;
-        });
-
-        const topBidders = Object.entries(bidderCounts)
-          .map(([company, bidCount]) => ({ company, bidCount }))
-          .sort((a, b) => b.bidCount - a.bidCount)
-          .slice(0, 10);
-
-        setAnalytics({
-          totalTenders: myTenders.length,
-          openTenders,
-          closedTenders,
-          totalBids: allBids.length,
-          averageBidsPerTender: myTenders.length > 0 ? allBids.length / myTenders.length : 0,
-          averageBidAmount: avgBidAmount,
-          lowestBidReceived: lowestBid,
-          highestBidReceived: highestBid,
-          pendingBids,
-          approvedBids,
-          rejectedBids,
-          tendersByServiceType: serviceTypes,
-          bidsByMonth: bidsByMonthArray,
-          topBidders
-        });
-      }
+      setAnalytics(mockAnalytics);
     } catch (error) {
       console.error("Error fetching analytics:", error);
     } finally {
@@ -177,27 +156,28 @@ export default function AnalyticsPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto pb-12">
+    <div className="max-w-7xl mx-auto">
       {/* Header */}
-      <div className="mb-8 flex items-center gap-4">
-        <Link
-          href="/jmb/dashboard"
-          className="flex items-center justify-center w-10 h-10 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700"
-        >
-          <ChevronLeftIcon className="w-5 h-5" />
-        </Link>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-            Analytics & Reports
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Insights into your tender performance
-          </p>
-        </div>
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
+          Analytics & Reports
+        </h1>
+        <p className="text-base text-gray-500 dark:text-gray-400">
+          Insights into your tender performance
+        </p>
       </div>
 
+      {analytics.totalTenders === 0 ? (
+        <div className="bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800 p-12 text-center">
+          <p className="text-gray-500 dark:text-gray-400 mb-4">No tenders yet. Create your first tender to see analytics.</p>
+          <Link href="/jmb/create-tender">
+            <Button>Create Tender</Button>
+          </Link>
+        </div>
+      ) : (
+        <>
       {/* Overview Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
           <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
             Total Tenders
@@ -214,7 +194,7 @@ export default function AnalyticsPage() {
           <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
             Total Bids Received
           </div>
-          <h4 className="text-2xl font-bold text-brand-500">
+          <h4 className="text-2xl font-bold text-gray-800 dark:text-white">
             {analytics.totalBids}
           </h4>
           <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -242,47 +222,47 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Bid Status Distribution */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
-        <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="p-6 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
           <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
             Pending Review
           </div>
-          <h4 className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+          <h4 className="text-3xl font-bold text-gray-800 dark:text-white">
             {analytics.pendingBids}
           </h4>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+          <div className="mt-3 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
             <div 
-              className="bg-yellow-600 h-2 rounded-full" 
+              className="bg-amber-500 dark:bg-amber-400 h-2 rounded-full" 
               style={{ width: `${analytics.totalBids > 0 ? (analytics.pendingBids / analytics.totalBids) * 100 : 0}%` }}
             />
           </div>
         </div>
 
-        <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
+        <div className="p-6 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
           <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
             Approved
           </div>
-          <h4 className="text-2xl font-bold text-green-600 dark:text-green-400">
+          <h4 className="text-3xl font-bold text-gray-800 dark:text-white">
             {analytics.approvedBids}
           </h4>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+          <div className="mt-3 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
             <div 
-              className="bg-green-600 h-2 rounded-full" 
+              className="bg-emerald-500 dark:bg-emerald-400 h-2 rounded-full" 
               style={{ width: `${analytics.totalBids > 0 ? (analytics.approvedBids / analytics.totalBids) * 100 : 0}%` }}
             />
           </div>
         </div>
 
-        <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
+        <div className="p-6 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
           <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
             Rejected
           </div>
-          <h4 className="text-2xl font-bold text-red-600 dark:text-red-400">
+          <h4 className="text-3xl font-bold text-gray-800 dark:text-white">
             {analytics.rejectedBids}
           </h4>
-          <div className="mt-2 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+          <div className="mt-3 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
             <div 
-              className="bg-red-600 h-2 rounded-full" 
+              className="bg-rose-500 dark:bg-rose-400 h-2 rounded-full" 
               style={{ width: `${analytics.totalBids > 0 ? (analytics.rejectedBids / analytics.totalBids) * 100 : 0}%` }}
             />
           </div>
@@ -290,6 +270,7 @@ export default function AnalyticsPage() {
       </div>
 
       {/* Tenders by Service Type */}
+      {Object.keys(analytics.tendersByServiceType).length > 0 && (
       <div className="bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800 p-6 mb-8">
         <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
           Tenders by Service Type
@@ -303,7 +284,7 @@ export default function AnalyticsPage() {
                 </span>
                 <div className="flex-1 bg-gray-200 rounded-full h-2 dark:bg-gray-700">
                   <div 
-                    className="bg-brand-500 h-2 rounded-full" 
+                    className="bg-blue-500 dark:bg-blue-400 h-2 rounded-full" 
                     style={{ width: `${(count / analytics.totalTenders) * 100}%` }}
                   />
                 </div>
@@ -315,6 +296,7 @@ export default function AnalyticsPage() {
           ))}
         </div>
       </div>
+      )}
 
       {/* Bids Over Time */}
       {analytics.bidsByMonth.length > 0 && (
@@ -331,7 +313,7 @@ export default function AnalyticsPage() {
                   </span>
                   <div className="flex-1 bg-gray-200 rounded-full h-2 dark:bg-gray-700">
                     <div 
-                      className="bg-blue-500 h-2 rounded-full" 
+                      className="bg-purple-500 dark:bg-purple-400 h-2 rounded-full" 
                       style={{ 
                         width: `${(count / Math.max(...analytics.bidsByMonth.map(b => b.count))) * 100}%` 
                       }}
@@ -357,7 +339,7 @@ export default function AnalyticsPage() {
             {analytics.topBidders.map(({ company, bidCount }, index) => (
               <div key={company} className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 text-sm font-bold">
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400 text-sm font-bold">
                     {index + 1}
                   </span>
                   <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -371,6 +353,8 @@ export default function AnalyticsPage() {
             ))}
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   );

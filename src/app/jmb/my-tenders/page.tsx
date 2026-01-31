@@ -139,13 +139,13 @@ export default function MyTendersPage() {
   });
 
   return (
-    <div className="p-6 mx-auto max-w-7xl">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
+    <div className="max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
             My Tenders
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-base text-gray-500 dark:text-gray-400">
             Manage your tender submissions
           </p>
         </div>

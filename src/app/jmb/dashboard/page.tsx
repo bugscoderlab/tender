@@ -2,15 +2,15 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  PlusIcon,
-  ListIcon,
   FileIcon,
   TimeIcon,
   CheckCircleIcon,
   CloseIcon,
-  DocsIcon
+  PlusIcon,
+  DocsIcon,
 } from "@/icons/index";
 import Button from "@/components/ui/button/Button";
+import StatCard from "@/components/shared/StatCard";
 
 interface Tender {
   id: number;
@@ -124,104 +124,54 @@ export default function JMBDashboard() {
     }
   };
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 dark:text-white">
-          Dashboard
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Manage your tenders
-        </p>
-      </div>
-
-      {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-6">
-        <Link href="/jmb/create-tender" className="p-6 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer">
-          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-brand-50 text-brand-500 dark:bg-brand-500/10 dark:text-brand-400">
-            <PlusIcon className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">
-              Create New Tender
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Post a new tender for services
-            </p>
-          </div>
-        </Link>
-
-        <Link href="/jmb/my-tenders" className="p-6 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800 flex items-start gap-4 hover:shadow-md transition-shadow cursor-pointer">
-          <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-50 text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-            <ListIcon className="w-6 h-6" />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-1">
-              View All Tenders
-            </h3>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Browse and manage your tenders
-            </p>
-          </div>
+    <div className="max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-2">
+            Dashboard
+          </h1>
+          <p className="text-base text-gray-500 dark:text-gray-400">
+            Manage your tenders and track performance
+          </p>
+        </div>
+        <Link href="/jmb/create-tender">
+          <Button className="flex items-center gap-2">
+            <PlusIcon className="w-5 h-5" />
+            New Tender
+          </Button>
         </Link>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-        <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
-          <div className="flex justify-between items-start mb-4">
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Total Tenders
-            </span>
-            <span className="text-gray-400">
-              <FileIcon className="w-5 h-5" />
-            </span>
-          </div>
-          <h4 className="text-2xl font-bold text-gray-800 dark:text-white">
-            {loading ? "..." : stats.total}
-          </h4>
-        </div>
-
-        <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
-          <div className="flex justify-between items-start mb-4">
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Pending Approval
-            </span>
-            <span className="text-gray-400">
-              <TimeIcon className="w-5 h-5" />
-            </span>
-          </div>
-          <h4 className="text-2xl font-bold text-gray-800 dark:text-white">
-            {loading ? "..." : stats.pending}
-          </h4>
-        </div>
-
-        <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
-          <div className="flex justify-between items-start mb-4">
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Approved / Published
-            </span>
-            <span className="text-gray-400">
-              <CheckCircleIcon className="w-5 h-5" />
-            </span>
-          </div>
-          <h4 className="text-2xl font-bold text-gray-800 dark:text-white">
-            {loading ? "..." : stats.approved}
-          </h4>
-        </div>
-
-        <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
-          <div className="flex justify-between items-start mb-4">
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Rejected
-            </span>
-            <span className="text-gray-400">
-              <CloseIcon className="w-5 h-5" />
-            </span>
-          </div>
-          <h4 className="text-2xl font-bold text-gray-800 dark:text-white">
-            {loading ? "..." : stats.rejected}
-          </h4>
-        </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <StatCard
+          title="Total Tenders"
+          value={stats.total}
+          icon={<FileIcon className="w-6 h-6" />}
+          color="blue"
+          loading={loading}
+        />
+        <StatCard
+          title="Pending Approval"
+          value={stats.pending}
+          icon={<TimeIcon className="w-6 h-6" />}
+          color="yellow"
+          loading={loading}
+        />
+        <StatCard
+          title="Active Tenders"
+          value={stats.approved}
+          icon={<CheckCircleIcon className="w-6 h-6" />}
+          color="green"
+          loading={loading}
+        />
+        <StatCard
+          title="Closed Tenders"
+          value={stats.rejected}
+          icon={<CloseIcon className="w-6 h-6" />}
+          color="red"
+          loading={loading}
+        />
       </div>
 
       {/* Recent Tenders */}
