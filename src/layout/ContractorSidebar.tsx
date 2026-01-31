@@ -101,10 +101,10 @@ const ContractorSidebar: React.FC = () => {
         </div>
         <div className={`flex flex-col overflow-hidden transition-all duration-300 ${isExpanded || isHovered ? "w-auto opacity-100" : "w-0 opacity-0"}`}>
           <span className="text-lg font-bold text-gray-900 dark:text-white whitespace-nowrap">
-            JMB Tender System
+            JMB Tender 
           </span>
           <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
-            Contractor Portal
+            System
           </span>
         </div>
       </div>

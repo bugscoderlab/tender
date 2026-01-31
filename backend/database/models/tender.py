@@ -50,4 +50,5 @@ class Tender(Base):
     status = Column(String, default="open") # open, closed, awarded
     
     # Relationships
-    creator = relationship("User") 
+    creator = relationship("User")
+    bids = relationship("Bid", back_populates="tender", cascade="all, delete-orphan") 

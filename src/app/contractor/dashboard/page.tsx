@@ -1,9 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   FileIcon,
-  BellIcon,
+  CheckCircleIcon,
+  TimeIcon,
 } from "@/icons/index";
 import Button from "@/components/ui/button/Button";
 import Badge from "@/components/ui/badge/Badge";
@@ -15,39 +17,99 @@ interface Tender {
   property_name: string;
   closing_date: string;
   status: string;
+  min_budget?: number;
+  max_budget?: number;
+}
+
+interface Bid {
+  id: number;
+  tender_id: number;
+  proposed_amount: number;
+  status: string;
+  created_at: string;
+  tender: {
+    title: string;
+    service_type: string;
+  };
 }
 
 export default function ContractorDashboard() {
+  const router = useRouter();
   const [tenders, setTenders] = useState<Tender[]>([]);
+  const [bids, setBids] = useState<Bid[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchTenders();
+    fetchDashboardData();
   }, []);
 
-  const fetchTenders = async () => {
+  const fetchDashboardData = async () => {
     try {
       const token = localStorage.getItem("access_token");
-      if (!token) return;
+      if (!token) {
+        router.push("/auth/sign-in");
+        return;
+      }
 
-      const response = await fetch("http://localhost:8000/tenders/", {
+      // Fetch available tenders
+      const tendersResponse = await fetch("http://localhost:8000/tenders/", {
         headers: {
-          "Authorization": `Bearer ${token}`
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
         }
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        // Filter for open tenders only for contractors
+      if (tendersResponse.ok) {
+        const data = await tendersResponse.json();
         const openTenders = data.filter((t: any) => t.status === 'open');
-        setTenders(openTenders);
+        setTenders(openTenders.slice(0, 5));
+      }
+
+      // Fetch my bids
+      const bidsResponse = await fetch("http://localhost:8000/bids/my-bids", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (bidsResponse.ok) {
+        const bidsData = await bidsResponse.json();
+        setBids(bidsData);
       }
     } catch (error) {
-      console.error("Error fetching tenders:", error);
+      console.error("Error fetching dashboard data:", error);
     } finally {
       setLoading(false);
     }
   };
+
+  const getBidStats = () => {
+    const total = bids.length;
+    const pending = bids.filter(b => b.status === "pending").length;
+    const approved = bids.filter(b => b.status === "approved").length;
+    return { total, pending, approved };
+  };
+
+  const formatCurrency = (amount?: number) => {
+    if (!amount) return "N/A";
+    return `RM ${amount.toLocaleString()}`;
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "pending":
+        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+      case "approved":
+        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+      case "rejected":
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+      default:
+        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400";
+    }
+  };
+
+  const stats = getBidStats();
 
   return (
     <div>
@@ -56,38 +118,113 @@ export default function ContractorDashboard() {
           Dashboard
         </h1>
         <p className="text-sm text-gray-500 dark:text-gray-400">
-          Browse available tenders
+          Browse available tenders and track your bids
         </p>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
-          <div className="flex justify-between items-start mb-4">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-brand-50 dark:bg-brand-500/10 rounded-lg flex items-center justify-center">
+              <FileIcon className="w-5 h-5 text-brand-500" />
+            </div>
             <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Available Tenders
+              Total Bids
             </span>
-            <span className="text-gray-400">
-              <FileIcon className="w-5 h-5" />
+          </div>
+          <h4 className="text-2xl font-bold text-gray-800 dark:text-white">
+            {stats.total}
+          </h4>
+        </div>
+
+        <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-yellow-50 dark:bg-yellow-500/10 rounded-lg flex items-center justify-center">
+              <TimeIcon className="w-5 h-5 text-yellow-500" />
+            </div>
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              Pending
+            </span>
+          </div>
+          <h4 className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+            {stats.pending}
+          </h4>
+        </div>
+
+        <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-green-50 dark:bg-green-500/10 rounded-lg flex items-center justify-center">
+              <CheckCircleIcon className="w-5 h-5 text-green-500" />
+            </div>
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              Approved
+            </span>
+          </div>
+          <h4 className="text-2xl font-bold text-green-600 dark:text-green-400">
+            {stats.approved}
+          </h4>
+        </div>
+
+        <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-gray-50 dark:bg-gray-700 rounded-lg flex items-center justify-center">
+              <FileIcon className="w-5 h-5 text-gray-500" />
+            </div>
+            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
+              Available
             </span>
           </div>
           <h4 className="text-2xl font-bold text-gray-800 dark:text-white">
             {tenders.length}
           </h4>
         </div>
+      </div>
 
-        <div className="p-5 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800">
-          <div className="flex justify-between items-start mb-4">
-            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              Unread Notifications
-            </span>
-            <span className="text-gray-400">
-              <BellIcon className="w-5 h-5" />
-            </span>
-          </div>
-          <h4 className="text-2xl font-bold text-gray-800 dark:text-white">
-            0
-          </h4>
+      {/* Recent Bids */}
+      <div className="bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800 p-6 mb-6">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
+            Recent Bids
+          </h3>
+          <Link href="/contractor/my-bids">
+            <Button variant="outline">View All</Button>
+          </Link>
+        </div>
+
+        <div className="space-y-4">
+          {loading ? (
+            <div className="text-center py-4 text-gray-500">Loading...</div>
+          ) : bids.length === 0 ? (
+            <div className="text-center py-8">
+              <div className="flex justify-center mb-3">
+                <FileIcon className="w-10 h-10 text-gray-400" />
+              </div>
+              <p className="text-gray-500 dark:text-gray-400 mb-4">No bids yet</p>
+              <Link href="/contractor/tenders">
+                <Button>Browse Tenders</Button>
+              </Link>
+            </div>
+          ) : (
+            bids.slice(0, 3).map((bid) => (
+              <div key={bid.id} className="p-4 bg-gray-50 border border-gray-100 rounded-xl dark:bg-white/[0.03] dark:border-white/[0.05]">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="font-semibold text-gray-800 dark:text-white mb-1">
+                      {bid.tender.title}
+                    </h4>
+                    <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+                      <span>{bid.tender.service_type}</span>
+                      <span>{formatCurrency(bid.proposed_amount)}</span>
+                    </div>
+                  </div>
+                  <span className={`inline-block px-2.5 py-0.5 text-xs font-medium rounded-full ${getStatusColor(bid.status)}`}>
+                    {bid.status.charAt(0).toUpperCase() + bid.status.slice(1)}
+                  </span>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       </div>
 
@@ -97,9 +234,9 @@ export default function ContractorDashboard() {
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
             Latest Tenders
           </h3>
-          {/* <Link href="/contractor/tenders" className="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
-            View all
-          </Link> */}
+          <Link href="/contractor/tenders">
+            <Button variant="outline">View All</Button>
+          </Link>
         </div>
 
         <div className="space-y-4">
@@ -119,9 +256,10 @@ export default function ContractorDashboard() {
                       <p className="text-sm text-gray-500 dark:text-gray-400 mb-1">
                         {tender.property_name}
                       </p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        Deadline: {new Date(tender.closing_date).toLocaleDateString()}
-                      </p>
+                      <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+                        <span>Deadline: {new Date(tender.closing_date).toLocaleDateString()}</span>
+                        <span>{formatCurrency(tender.min_budget)} - {formatCurrency(tender.max_budget)}</span>
+                      </div>
                     </div>
                     <Badge variant="light" color="light">
                       {tender.service_type}
