@@ -232,7 +232,7 @@ export default function AnalyticsPage() {
           </h4>
           <div className="mt-3 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
             <div 
-              className="bg-amber-500 dark:bg-amber-400 h-2 rounded-full" 
+              className="bg-amber-600 dark:bg-amber-400 h-2 rounded-full" 
               style={{ width: `${analytics.totalBids > 0 ? (analytics.pendingBids / analytics.totalBids) * 100 : 0}%` }}
             />
           </div>
@@ -247,7 +247,7 @@ export default function AnalyticsPage() {
           </h4>
           <div className="mt-3 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
             <div 
-              className="bg-emerald-500 dark:bg-emerald-400 h-2 rounded-full" 
+              className="bg-emerald-700 dark:bg-emerald-400 h-2 rounded-full" 
               style={{ width: `${analytics.totalBids > 0 ? (analytics.approvedBids / analytics.totalBids) * 100 : 0}%` }}
             />
           </div>
@@ -262,7 +262,7 @@ export default function AnalyticsPage() {
           </h4>
           <div className="mt-3 w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
             <div 
-              className="bg-rose-500 dark:bg-rose-400 h-2 rounded-full" 
+              className="bg-red-600 dark:bg-rose-400 h-2 rounded-full" 
               style={{ width: `${analytics.totalBids > 0 ? (analytics.rejectedBids / analytics.totalBids) * 100 : 0}%` }}
             />
           </div>
@@ -298,33 +298,34 @@ export default function AnalyticsPage() {
       </div>
       )}
 
-      {/* Bids Over Time */}
+      {/* Bids Over Time - Bar Chart */}
       {analytics.bidsByMonth.length > 0 && (
         <div className="bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800 p-6 mb-8">
           <h3 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">
             Bid Activity Over Time
           </h3>
-          <div className="space-y-3">
-            {analytics.bidsByMonth.map(({ month, count }) => (
-              <div key={month} className="flex items-center justify-between">
-                <div className="flex items-center gap-3 flex-1">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 min-w-[100px]">
-                    {formatMonth(month)}
-                  </span>
-                  <div className="flex-1 bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+          <div className="flex items-end justify-between gap-2 h-64 pt-4">
+            {analytics.bidsByMonth.map(({ month, count }) => {
+              const maxCount = Math.max(...analytics.bidsByMonth.map(b => b.count));
+              const heightPercentage = (count / maxCount) * 100;
+              
+              return (
+                <div key={month} className="flex flex-col items-center flex-1 gap-2">
+                  <div className="relative w-full flex flex-col items-center justify-end" style={{ height: '200px' }}>
+                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                      {count}
+                    </span>
                     <div 
-                      className="bg-purple-500 dark:bg-purple-400 h-2 rounded-full" 
-                      style={{ 
-                        width: `${(count / Math.max(...analytics.bidsByMonth.map(b => b.count))) * 100}%` 
-                      }}
+                      className="w-40 bg-gray-400 dark:bg-gray-600 rounded-t-lg transition-all duration-300 hover:bg-gray-500 dark:hover:bg-gray-500"
+                      style={{ height: `${heightPercentage}%`, minHeight: count > 0 ? '20px' : '0px' }}
                     />
                   </div>
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400 text-center">
+                    {formatMonth(month)}
+                  </span>
                 </div>
-                <span className="text-sm font-bold text-gray-800 dark:text-white ml-4">
-                  {count} bids
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}

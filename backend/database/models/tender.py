@@ -48,6 +48,7 @@ class Tender(Base):
     tender_documents = Column(JSON, nullable=True)
     
     status = Column(String, default="open") # open, closed, awarded
+    approval_status = Column(String, default="pending") # pending, approved, rejected
     
     # Relationships
     creator = relationship("User")

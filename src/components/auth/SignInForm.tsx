@@ -65,6 +65,8 @@ export default function SignInForm() {
           router.push("/contractor/dashboard");
         } else if (data.user.role === "jmb") {
           router.push("/jmb/dashboard");
+        } else if (data.user.role === "admin") {
+          router.push("/admin/dashboard");
         } else {
           // Fallback or other roles
           alert("Unknown user role. Please contact support.");

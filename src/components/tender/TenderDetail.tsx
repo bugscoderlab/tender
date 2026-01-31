@@ -122,12 +122,11 @@ export default function TenderDetail({ tenderId, backUrl, backLabel, userType }:
   // Helper for status classes
   const getStatusClasses = (status: string) => {
      if (status === 'open') {
-         return userType === 'contractor' 
-            ? 'bg-success-50 text-success-600 dark:bg-success-500/10 dark:text-success-500'
-            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400';
+         return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400';
      }
-     if (status === 'closed') return 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-     return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
+     if (status === 'closed') return 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400';
+     if (status === 'pending') return 'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400';
+     return 'bg-gray-50 text-gray-700 dark:bg-gray-950/30 dark:text-gray-400';
   };
 
   return (

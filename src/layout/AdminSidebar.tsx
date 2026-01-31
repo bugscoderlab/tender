@@ -1,20 +1,16 @@
 "use client";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "@/context/SidebarContext";
-import {
-  ArrowRightIcon,
-} from "@/icons/index";
-import {LayoutDashboard, ClipboardList, CircleDollarSign, ChartNoAxesCombined} from 'lucide-react';
+import { ArrowRightIcon } from "@/icons/index";
+import { LayoutDashboard, ShieldCheck } from "lucide-react";
 
 type NavItem = {
   name: string;
   icon: React.ReactNode;
   iconColor: string;
   path?: string;
-  subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
 const navItems: NavItem[] = [
@@ -22,35 +18,17 @@ const navItems: NavItem[] = [
     icon: <LayoutDashboard />,
     iconColor: "text-blue-600 dark:text-blue-400",
     name: "Dashboard",
-    path: "/jmb/dashboard",
+    path: "/admin/dashboard",
   },
   {
-    icon: <ClipboardList />,
-    iconColor: "text-purple-700 dark:text-purple-400",
-    name: "My Tenders",
-    path: "/jmb/my-tenders",
-  },
-  {
-    icon: <CircleDollarSign />,
+    icon: <ShieldCheck />,
     iconColor: "text-emerald-700 dark:text-emerald-400",
-    name: "All Bids",
-    path: "/jmb/all-bids",
+    name: "Tender Approvals",
+    path: "/admin/dashboard",
   },
-  {
-    icon: <ChartNoAxesCombined />,
-    iconColor: "text-red-700 dark:text-red-400",
-    name: "Analytics",
-    path: "/jmb/analytics",
-  },
-  // {
-  //   icon: <BellIcon />,
-  //   iconColor: "text-red-500",
-  //   name: "Notifications",
-  //   path: "/jmb/notifications",
-  // },
 ];
 
-const JMBSidebar: React.FC = () => {
+const AdminSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
   const [userEmail, setUserEmail] = useState<string>("");
@@ -86,31 +64,25 @@ const JMBSidebar: React.FC = () => {
     const isActive = pathname === navItem.path;
     return (
       <li key={navItem.name}>
-        {navItem.subItems ? (
-          <div>
-            {/* SubItems logic omitted for simplicity as we don't need it yet */}
-          </div>
-        ) : (
-          <Link
-            href={navItem.path || "#"}
-            className={`group relative flex items-center gap-2.5 rounded-lg px-4 py-2 font-medium duration-300 ease-in-out ${
-              isActive
-                ? "bg-brand-50 text-brand-500 dark:bg-brand-400/20 dark:text-brand-400"
-                : "text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5"
+        <Link
+          href={navItem.path || "#"}
+          className={`group relative flex items-center gap-2.5 rounded-lg px-4 py-2 font-medium duration-300 ease-in-out ${
+            isActive
+              ? "bg-brand-50 text-brand-500 dark:bg-brand-400/20 dark:text-brand-400"
+              : "text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5"
+          }`}
+        >
+          <span className={navItem.iconColor}>
+            {navItem.icon}
+          </span>
+          <span
+            className={`transition-all duration-300 ease-in-out ${
+              isExpanded || isHovered ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
             }`}
           >
-            <span className={navItem.iconColor}>
-              {navItem.icon}
-            </span>
-            <span
-              className={`transition-all duration-300 ease-in-out ${
-                isExpanded || isHovered ? "opacity-100" : "opacity-0 w-0 overflow-hidden"
-              }`}
-            >
-              {navItem.name}
-            </span>
-          </Link>
-        )}
+            {navItem.name}
+          </span>
+        </Link>
       </li>
     );
   };
@@ -120,7 +92,7 @@ const JMBSidebar: React.FC = () => {
   return (
     <aside
       ref={sidebarRef}
-      className={`fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-gray-200 bg-white transition-all duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900 ${
+      className={`fixed left-0 top-0 z-[9999] flex h-screen flex-col border-r border-gray-200 bg-white transition-all duration-300 ease-in-out dark:border-gray-800 dark:bg-gray-900 ${
         isExpanded || isHovered ? "w-[290px]" : "w-[90px]"
       } ${isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
       onMouseEnter={() => !isExpanded && setIsHovered(true)}
@@ -129,14 +101,14 @@ const JMBSidebar: React.FC = () => {
       {/* Sidebar Header */}
       <div className={`flex items-center gap-3 px-8 py-6 ${isExpanded || isHovered ? "justify-start" : "justify-center"}`}>
         <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-brand-500 text-white shrink-0">
-          <span className="text-xl font-bold">J</span>
+          <span className="text-xl font-bold">A</span>
         </div>
         <div className={`flex flex-col overflow-hidden transition-all duration-300 ${isExpanded || isHovered ? "w-auto opacity-100" : "w-0 opacity-0"}`}>
           <span className="text-lg font-bold text-gray-900 dark:text-white whitespace-nowrap">
-            JMB Tender
+            Admin Panel
           </span>
           <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
-            System
+            Tender System
           </span>
         </div>
       </div>
@@ -151,9 +123,19 @@ const JMBSidebar: React.FC = () => {
       {/* Footer */}
       <div className="mt-auto px-4 pb-6 lg:px-6">
         <div className={`flex flex-col gap-2 ${isExpanded || isHovered ? "" : "items-center"}`}>
+          {(isExpanded || isHovered) && userName && (
+            <div className="px-4 py-2 text-sm font-medium text-gray-800 dark:text-white truncate">
+              {userName}
+            </div>
+          )}
           {(isExpanded || isHovered) && (
-            <div className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400 truncate">
+            <div className="px-4 py-1 text-xs text-gray-500 dark:text-gray-400 truncate">
               {userEmail}
+            </div>
+          )}
+          {(isExpanded || isHovered) && (
+            <div className="px-4 py-1 text-xs text-brand-500 dark:text-brand-400 font-medium truncate">
+              Admin
             </div>
           )}
           <Link
@@ -177,4 +159,5 @@ const JMBSidebar: React.FC = () => {
   );
 };
 
-export default JMBSidebar;
+export default AdminSidebar;
+

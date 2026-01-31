@@ -65,11 +65,11 @@ export default function ContractorMyBidsPage() {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+        return "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400";
       case "approved":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+        return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400";
       case "rejected":
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+        return "bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400";
       default:
         return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400";
     }
@@ -196,7 +196,7 @@ export default function ContractorMyBidsPage() {
                     {bid.tender.title}
                   </h3>
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
-                    <span className="px-2.5 py-0.5 text-xs font-medium bg-brand-50 text-brand-600 rounded-full dark:bg-brand-500/10 dark:text-brand-400">
+                    <span className="px-2.5 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-full dark:bg-blue-950/30 dark:text-blue-400">
                       {bid.tender.service_type}
                     </span>
                     <span>Company: {bid.company_name}</span>

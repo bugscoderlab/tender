@@ -39,6 +39,7 @@ class TenderResponse(TenderCreateRequest):
     id: int
     user_id: int
     status: str
+    approval_status: Optional[str] = "pending"
     
     class Config:
         from_attributes = True

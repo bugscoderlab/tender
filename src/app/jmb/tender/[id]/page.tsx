@@ -254,7 +254,7 @@ export default function TenderDetailPage() {
 
   const renderEditMode = () => {
     return (
-      <form onSubmit={handleSave} className="space-y-8">
+      <form onSubmit={handleSave} className="space-y-12">
         {/* Tender Details Section */}
         <div>
           <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
@@ -590,10 +590,10 @@ export default function TenderDetailPage() {
 
   const renderViewMode = () => {
     return (
-      <div className="space-y-8">
+      <div className="space-y-12">
         {/* Tender Details Section */}
         <div>
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
             Tender Details
           </h2>
           <div className="space-y-4">
@@ -611,7 +611,7 @@ export default function TenderDetailPage() {
         {/* Property Information Section */}
         {(formData.property_name || formData.property_address) && (
           <div>
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+            <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
               Property Information
             </h2>
             <div className="space-y-4">
@@ -633,10 +633,10 @@ export default function TenderDetailPage() {
 
         {/* Scope & Requirements Section */}
         <div>
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
             Scope & Requirements
           </h2>
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
               <h4 className="font-medium text-sm text-gray-500 dark:text-gray-400">Scope of Work</h4>
               <p className="mt-1 text-gray-800 dark:text-white whitespace-pre-wrap">{formData.scope_of_work}</p>
@@ -648,7 +648,7 @@ export default function TenderDetailPage() {
             {requiredLicenses.length > 0 && (
               <div>
                 <h4 className="font-medium text-sm text-gray-500 dark:text-gray-400">Required Licenses/Certifications</h4>
-                <ul className="mt-1 list-disc list-inside text-gray-800 dark:text-white">
+                <ul className="my-2 list-disc list-inside font-semibold text-gray-800 dark:text-white">
                   {requiredLicenses.map((license, index) => (
                     <li key={index}>{license}</li>
                   ))}
@@ -673,7 +673,7 @@ export default function TenderDetailPage() {
 
         {/* Budget & Timeline Section */}
         <div>
-          <h2 className="text-xl font-semibold text-gray-800 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-4 pb-2 border-b border-gray-200 dark:border-gray-700">
             Budget & Timeline
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

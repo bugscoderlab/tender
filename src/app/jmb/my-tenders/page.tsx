@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PlusIcon, FileIcon } from "@/icons";
+import { Plus, Pencil, Eye, CalendarDays, CircleDollarSign } from 'lucide-react';
 import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
 
@@ -151,7 +152,7 @@ export default function MyTendersPage() {
         </div>
         <Link href="/jmb/create-tender">
           <Button className="flex items-center gap-2">
-            <PlusIcon className="w-5 h-5" />
+            <Plus className="w-5 h-5" />
             New Tender
           </Button>
         </Link>
@@ -206,23 +207,24 @@ export default function MyTendersPage() {
                         </h3>
                     </Link>
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className="px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-800 rounded-full dark:bg-gray-800 dark:text-gray-300">
+                        <span className="px-2.5 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-full dark:bg-blue-950/30 dark:text-blue-400">
                             {tender.service_type}
                         </span>
                         <span className={`px-2.5 py-0.5 text-xs font-medium rounded-full ${
-                            tender.status === 'open' ? 'bg-success-50 text-success-600 dark:bg-success-500/10 dark:text-success-500' :
-                            tender.status === 'closed' ? 'bg-error-50 text-error-600 dark:bg-error-500/10 dark:text-error-500' :
-                            'bg-warning-50 text-warning-600 dark:bg-warning-500/10 dark:text-warning-500'
+                            tender.status === 'open' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400' :
+                            tender.status === 'closed' ? 'bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400' :
+                            tender.status === 'pending' ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400' :
+                            'bg-gray-50 text-gray-700 dark:bg-gray-950/30 dark:text-gray-400'
                         }`}>
-                            {tender.status === 'open' ? 'Pending Approval' : tender.status} 
+                            {tender.status.charAt(0).toUpperCase() + tender.status.slice(1)} 
                         </span>
                         {bidCounts[tender.id] !== undefined && bidCounts[tender.id] > 0 && (
-                            <span className="px-2.5 py-0.5 text-xs font-medium bg-brand-50 text-brand-600 rounded-full dark:bg-brand-500/10 dark:text-brand-400 flex items-center gap-1">
-                                📨 {bidCounts[tender.id]} {bidCounts[tender.id] === 1 ? 'bid' : 'bids'}
+                            <span className="px-2.5 py-0.5 text-xs font-medium bg-purple-50 text-purple-700 rounded-full dark:bg-purple-950/30 dark:text-purple-400 flex items-center gap-1">
+                                <CircleDollarSign className="w-3.5 h-3.5" /> {bidCounts[tender.id]} {bidCounts[tender.id] === 1 ? 'bid' : 'bids'}
                             </span>
                         )}
                         <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                             📅 {new Date(tender.closing_date).toLocaleDateString()}
+                             <CalendarDays className="w-4 h-4 text-gray-500 dark:text-gray-400" /> {new Date(tender.closing_date).toLocaleDateString()}
                         </span>
                     </div>
                 </div>
@@ -247,17 +249,21 @@ export default function MyTendersPage() {
                     <div className="flex gap-2">
                         <Button
                             variant="outline"
+                            className="text-sm !text-blue-700 !border-blue-300 hover:!bg-blue-50 dark:!text-blue-400 dark:!border-blue-800 dark:hover:!bg-blue-950/30"
                             onClick={() => {
                                 router.push(`/jmb/tender/${tender.id}`);
                             }}
+                            startIcon={<Pencil className="w-4 h-4" />}
                         >
                             Edit
                         </Button>
                         <Button
                             variant="outline"
+                            className="text-sm !text-blue-700 !border-blue-300 hover:!bg-blue-50 dark:!text-blue-400 dark:!border-blue-800 dark:hover:!bg-blue-950/30"
                             onClick={() => {
                                 router.push(`/jmb/tender/${tender.id}/bids`);
                             }}
+                            startIcon={<Eye className="w-4 h-4" />}
                         >
                             View Bids
                         </Button>

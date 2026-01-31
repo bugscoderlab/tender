@@ -51,19 +51,21 @@ export default function StatCard({ title, value, icon, color, loading }: StatCar
 
   return (
     <div className="p-6 bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800 hover:shadow-lg transition-shadow">
-      <div className="flex items-center gap-4 mb-3">
+      <div className="flex flex-col items-start gap-3">
         <div className={`w-12 h-12 ${colors.bg} rounded-xl flex items-center justify-center`}>
           <div className={colors.text}>
             {icon}
           </div>
         </div>
-        <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-          {title}
-        </span>
+        <div className="flex flex-col gap-1">
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+            {title}
+          </span>
+          <h4 className={`text-3xl font-bold ${colors.valueText}`}>
+            {loading ? "..." : value}
+          </h4>
+        </div>
       </div>
-      <h4 className={`text-3xl font-bold ${colors.valueText}`}>
-        {loading ? "..." : value}
-      </h4>
     </div>
   );
 }

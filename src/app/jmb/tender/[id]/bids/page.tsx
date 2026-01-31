@@ -2,7 +2,8 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
-import { ChevronLeftIcon, CheckCircleIcon, CloseIcon } from "@/icons";
+import { ChevronLeftIcon } from "@/icons";
+import { Trophy, DollarSign, Award, Calendar, MapPin, X, Check, CircleCheck, CircleX } from "lucide-react";
 import Button from "@/components/ui/button/Button";
 
 interface Bid {
@@ -137,7 +138,7 @@ export default function TenderBidsPage() {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+        return "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400";
       case "approved":
         return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
       case "rejected":
@@ -292,10 +293,10 @@ export default function TenderBidsPage() {
             onChange={(e) => setSortBy(e.target.value as any)}
             className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
           >
-            <option value="price-low">💰 Lowest Price First</option>
-            <option value="price-high">💰 Highest Price First</option>
-            <option value="experience">🏆 Most Experience</option>
-            <option value="date">📅 Most Recent</option>
+            <option value="price-low">Lowest Price First</option>
+            <option value="price-high">Highest Price First</option>
+            <option value="experience">Most Experience</option>
+            <option value="date">Most Recent</option>
           </select>
           
           <select
@@ -333,13 +334,14 @@ export default function TenderBidsPage() {
               key={bid.id}
               className={`bg-white border-2 rounded-2xl dark:bg-gray-900 p-6 relative ${
                 isLowestBid 
-                  ? 'border-green-500 dark:border-green-500' 
+                  ? 'border-green-600 dark:border-green-500' 
                   : 'border-gray-200 dark:border-gray-800'
               }`}
             >
               {isLowestBid && (
-                <div className="absolute -top-3 left-6 px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full">
-                  🏆 LOWEST BID
+                <div className="absolute -top-3 left-6 px-3 py-1 bg-emerald-600 text-white text-xs font-bold rounded-full flex items-center gap-1">
+                  <Trophy className="w-3.5 h-3.5" />
+                  LOWEST BID
                 </div>
               )}
               <div className="flex justify-between items-start mb-4">
@@ -401,16 +403,18 @@ export default function TenderBidsPage() {
                   <div className="flex gap-2">
                     <Button
                       variant="outline"
+                      className="!text-rose-700 !border-rose-300 hover:!bg-rose-50 dark:!text-rose-400 dark:!border-rose-800 dark:hover:!bg-rose-950/30"
                       onClick={() => handleUpdateBidStatus(bid.id, "rejected")}
                       disabled={updatingBidId === bid.id}
-                      startIcon={<CloseIcon />}
+                      startIcon={<CircleX className="w-4 h-4" />}
                     >
                       {updatingBidId === bid.id ? "Updating..." : "Reject"}
                     </Button>
                     <Button
+                      className="bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700"
                       onClick={() => handleUpdateBidStatus(bid.id, "approved")}
                       disabled={updatingBidId === bid.id}
-                      startIcon={<CheckCircleIcon />}
+                      startIcon={<CircleCheck className="w-4 h-4" />}
                     >
                       {updatingBidId === bid.id ? "Updating..." : "Approve"}
                     </Button>

@@ -13,7 +13,8 @@ function SignUpFormContent() {
   const searchParams = useSearchParams();
   
   // Derive state from URL
-  const userType = searchParams.get("type") === "contractor" ? "contractor" : "jmb";
+  const typeParam = searchParams.get("type");
+  const userType = typeParam === "contractor" ? "contractor" : typeParam === "admin" ? "admin" : "jmb";
   
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -24,7 +25,7 @@ function SignUpFormContent() {
     [searchParams]
   );
 
-  const handleUserTypeChange = (type: "jmb" | "contractor") => {
+  const handleUserTypeChange = (type: "jmb" | "contractor" | "admin") => {
     router.push(pathname + "?" + createQueryString("type", type));
   };
   
@@ -63,6 +64,9 @@ function SignUpFormContent() {
         const emailParam = encodeURIComponent(email);
         if (userType === "contractor") {
           router.push(`/signup/contractor-details?email=${emailParam}`);
+        } else if (userType === "admin") {
+          // Admin accounts can sign in immediately
+          router.push(`/signin`);
         } else {
           router.push(`/signup/jmb-details?email=${emailParam}`);
         }
@@ -99,7 +103,7 @@ function SignUpFormContent() {
         <div>
           <div className="mb-5 sm:mb-8">
             <h1 className="mb-2 font-semibold text-gray-800 text-title-sm dark:text-white/90 sm:text-title-md">
-              Sign Up {userType === "jmb" ? "(JMB Member)" : "(Contractor)"}
+              Sign Up {userType === "jmb" ? "(JMB Member)" : userType === "admin" ? "(Admin)" : "(Contractor)"}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
               Enter your email and password to sign up!
@@ -117,7 +121,7 @@ function SignUpFormContent() {
                     : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                 }`}
               >
-                JMB Member
+                JMB
               </button>
               <button
                 type="button"
@@ -129,6 +133,17 @@ function SignUpFormContent() {
                 }`}
               >
                 Contractor
+              </button>
+              <button
+                type="button"
+                onClick={() => handleUserTypeChange("admin")}
+                className={`flex-1 py-2 text-sm font-medium rounded-md transition-all ${
+                  userType === "admin"
+                    ? "bg-brand-500 text-white shadow-sm"
+                    : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                }`}
+              >
+                Admin
               </button>
             </div>
 

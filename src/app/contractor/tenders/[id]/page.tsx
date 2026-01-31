@@ -153,7 +153,7 @@ export default function ContractorTenderDetailsPage() {
           </div>
         </div>
         {hasApplied ? (
-          <span className="px-4 py-2 bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 rounded-lg font-medium">
+          <span className="px-4 py-2 bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400 rounded-lg font-medium">
             Already Applied
           </span>
         ) : (

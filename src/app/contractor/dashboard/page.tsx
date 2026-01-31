@@ -65,7 +65,9 @@ export default function ContractorDashboard() {
 
       if (tendersResponse.ok) {
         const data = await tendersResponse.json();
-        const openTenders = data.filter((t: any) => t.status === 'open');
+        const openTenders = data.filter((t: any) => 
+          t.status === 'open' && t.approval_status === 'approved'
+        );
         setTenders(openTenders.slice(0, 5));
       }
 
@@ -103,11 +105,11 @@ export default function ContractorDashboard() {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+        return "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400";
       case "approved":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+        return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400";
       case "rejected":
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+        return "bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400";
       default:
         return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400";
     }
@@ -127,7 +129,7 @@ export default function ContractorDashboard() {
       </div>
 
       {/* Action Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+      {/* <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         <ActionCard
           title="Browse Tenders"
           description="Find and apply for new opportunities"
@@ -149,7 +151,7 @@ export default function ContractorDashboard() {
           href="/contractor/tenders"
           color="blue"
         />
-      </div>
+      </div> */}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -212,12 +214,14 @@ export default function ContractorDashboard() {
               <div key={bid.id} className="p-4 bg-gray-50 border border-gray-100 rounded-xl dark:bg-white/[0.03] dark:border-white/[0.05]">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h4 className="font-semibold text-gray-800 dark:text-white mb-1">
+                    <h4 className="font-semibold text-gray-800 dark:text-white mb-2">
                       {bid.tender.title}
                     </h4>
-                    <div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
-                      <span>{bid.tender.service_type}</span>
-                      <span>{formatCurrency(bid.proposed_amount)}</span>
+                    <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-1">
+                      <span className="px-2 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-full dark:bg-blue-950/30 dark:text-blue-400">
+                        {bid.tender.service_type}
+                      </span>
+                      <span className="font-semibold text-gray-800 dark:text-white">{formatCurrency(bid.proposed_amount)}</span>
                     </div>
                   </div>
                   <span className={`inline-block px-2.5 py-0.5 text-xs font-medium rounded-full ${getStatusColor(bid.status)}`}>

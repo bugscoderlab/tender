@@ -9,6 +9,7 @@ import {
   PlusIcon,
   DocsIcon,
 } from "@/icons/index";
+import { CircleX, CircleCheckBig, Clock3, ClipboardList, Plus, MapPin} from 'lucide-react';
 import Button from "@/components/ui/button/Button";
 import StatCard from "@/components/shared/StatCard";
 
@@ -113,14 +114,16 @@ export default function JMBDashboard() {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+        return "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400";
+      case "open":
       case "approved":
       case "published":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+        return "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-400";
+      case "closed":
       case "rejected":
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+        return "bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400";
       default:
-        return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400";
+        return "bg-gray-50 text-gray-700 dark:bg-gray-950/30 dark:text-gray-400";
     }
   };
   return (
@@ -136,7 +139,7 @@ export default function JMBDashboard() {
         </div>
         <Link href="/jmb/create-tender">
           <Button className="flex items-center gap-2">
-            <PlusIcon className="w-5 h-5" />
+            <Plus className="w-5 h-5" />
             New Tender
           </Button>
         </Link>
@@ -147,28 +150,28 @@ export default function JMBDashboard() {
         <StatCard
           title="Total Tenders"
           value={stats.total}
-          icon={<FileIcon className="w-6 h-6" />}
+          icon={<ClipboardList className="w-6 h-6" />}
           color="blue"
           loading={loading}
         />
         <StatCard
           title="Pending Approval"
           value={stats.pending}
-          icon={<TimeIcon className="w-6 h-6" />}
+          icon={<Clock3 className="w-6 h-6" />}
           color="yellow"
           loading={loading}
         />
         <StatCard
           title="Active Tenders"
           value={stats.approved}
-          icon={<CheckCircleIcon className="w-6 h-6" />}
+          icon={<CircleCheckBig className="w-6 h-6" />}
           color="green"
           loading={loading}
         />
         <StatCard
           title="Closed Tenders"
           value={stats.rejected}
-          icon={<CloseIcon className="w-6 h-6" />}
+          icon={<CircleX className="w-6 h-6" />}
           color="red"
           loading={loading}
         />
@@ -220,12 +223,14 @@ export default function JMBDashboard() {
                   </span>
                 </div>
                 <div className="flex flex-wrap gap-4 text-sm text-gray-600 dark:text-gray-400">
-                  <span className="flex items-center gap-1">
-                    <DocsIcon className="w-4 h-4" />
+                  <span className="px-2.5 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-full dark:bg-blue-950/30 dark:text-blue-400">
                     {tender.service_type}
                   </span>
                   {tender.property_name && (
-                    <span>📍 {tender.property_name}</span>
+                    <span className="flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5" />
+                      {tender.property_name}
+                    </span>
                   )}
                   <span className="flex items-center gap-1">
                     <TimeIcon className="w-4 h-4" />

@@ -2,8 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { UserIcon, FileIcon, TimeIcon } from "@/icons";
-import Input from "@/components/form/input/InputField";
+import { UserIcon, FileIcon, TimeIcon } from "@/icons";import { MapPin } from "lucide-react";import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
 
 interface Tender {
@@ -48,8 +47,10 @@ export default function ContractorTendersPage() {
 
       if (response.ok) {
         const data = await response.json();
-        // Show only open tenders
-        const openTenders = data.filter((t: Tender) => t.status === "open");
+        // Show only open AND approved tenders
+        const openTenders = data.filter((t: any) => 
+          t.status === "open" && t.approval_status === "approved"
+        );
         setTenders(openTenders);
       }
     } catch (error) {
@@ -151,12 +152,13 @@ export default function ContractorTendersPage() {
                     {tender.title}
                   </h3>
                   <div className="flex flex-wrap items-center gap-3">
-                    <span className="px-2.5 py-0.5 text-xs font-medium bg-brand-50 text-brand-600 rounded-full dark:bg-brand-500/10 dark:text-brand-400">
+                    <span className="px-2.5 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-full dark:bg-blue-950/30 dark:text-blue-400">
                       {tender.service_type}
                     </span>
                     {tender.property_name && (
-                      <span className="text-xs text-gray-600 dark:text-gray-400">
-                        📍 {tender.property_name}
+                      <span className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
+                        <MapPin className="w-3.5 h-3.5" />
+                        {tender.property_name}
                       </span>
                     )}
                     <span className="text-xs text-gray-600 dark:text-gray-400 flex items-center gap-1">
@@ -164,7 +166,7 @@ export default function ContractorTendersPage() {
                       Closes: {formatDate(tender.closing_date)} at {tender.closing_time}
                     </span>
                     {isClosingSoon(tender.closing_date, tender.closing_time) && (
-                      <span className="px-2.5 py-0.5 text-xs font-medium bg-red-50 text-red-600 rounded-full dark:bg-red-500/10 dark:text-red-400">
+                      <span className="px-2.5 py-0.5 text-xs font-medium bg-rose-50 text-rose-700 rounded-full dark:bg-rose-950/30 dark:text-rose-400">
                         Closing Soon!
                       </span>
                     )}

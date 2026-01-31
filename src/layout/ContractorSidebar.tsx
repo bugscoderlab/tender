@@ -11,6 +11,7 @@ import {
   ListIcon,
   DocsIcon,
 } from "@/icons/index";
+import {CircleDollarSign, ClipboardList} from 'lucide-react';
 
 type NavItem = {
   name: string;
@@ -28,13 +29,13 @@ const navItems: NavItem[] = [
     path: "/contractor/dashboard",
   },
   {
-    icon: <ListIcon />,
+    icon: <ClipboardList />,
     iconColor: "text-purple-800 dark:text-purple-400",
     name: "Browse Tenders",
     path: "/contractor/tenders",
   },
   {
-    icon: <DocsIcon />,
+    icon: <CircleDollarSign />,
     iconColor: "text-emerald-800 dark:text-emerald-400",
     name: "My Bids",
     path: "/contractor/my-bids",

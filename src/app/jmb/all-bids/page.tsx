@@ -2,8 +2,8 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { CircleCheck, Eye, CircleX } from "lucide-react";
 import Button from "@/components/ui/button/Button";
-import { CheckCircleIcon, CloseIcon } from "@/icons";
 
 interface Bid {
   id: number;
@@ -128,11 +128,11 @@ export default function AllBidsPage() {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "pending":
-        return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+        return "bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-400";
       case "approved":
-        return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
+        return "bg-green-50 text-green-600 dark:bg-green-950/30 dark:text-green-400";
       case "rejected":
-        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+        return "bg-rose-50 text-rose-700 dark:bg-rose-950/30 dark:text-rose-400";
       default:
         return "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-400";
     }
@@ -188,7 +188,7 @@ export default function AllBidsPage() {
           <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
             Pending Review
           </div>
-          <h4 className="text-2xl font-bold text-yellow-600 dark:text-yellow-400">
+          <h4 className="text-2xl font-bold text-amber-600 dark:text-amber-400">
             {stats.pending}
           </h4>
         </div>
@@ -197,7 +197,7 @@ export default function AllBidsPage() {
           <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
             Approved
           </div>
-          <h4 className="text-2xl font-bold text-green-600 dark:text-green-400">
+          <h4 className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">
             {stats.approved}
           </h4>
         </div>
@@ -206,7 +206,7 @@ export default function AllBidsPage() {
           <div className="text-sm font-medium text-gray-500 dark:text-gray-400 mb-2">
             Rejected
           </div>
-          <h4 className="text-2xl font-bold text-red-600 dark:text-red-400">
+          <h4 className="text-2xl font-bold text-rose-600 dark:text-rose-400">
             {stats.rejected}
           </h4>
         </div>
@@ -229,7 +229,7 @@ export default function AllBidsPage() {
       </div>
 
       {/* Bids List */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {loading ? (
           <div className="text-center py-10 text-gray-500">Loading bids...</div>
         ) : filteredBids.length === 0 ? (
@@ -245,23 +245,25 @@ export default function AllBidsPage() {
           filteredBids.map((bid) => (
             <div
               key={bid.id}
-              className="bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800 p-6"
+              className="bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800 p-6 gap-6"
             >
               {/* Header with Tender Title and Status */}
               <div className="flex justify-between items-start mb-4 pb-4 border-b border-gray-200 dark:border-gray-800">
                 <div className="flex-1">
                   <Link 
                     href={`/jmb/tender/${bid.tender_id}/bids`}
-                    className="text-lg font-semibold text-gray-800 dark:text-white hover:text-blue-600 transition-colors inline-block mb-1"
+                    className="text-lg font-semibold text-gray-800 dark:text-white hover:text-blue-600 transition-colors inline-block mb-2"
                   >
                     {bid.tender.title}
                   </Link>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {bid.tender.service_type}
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 text-xs font-medium bg-blue-50 text-blue-700 rounded-full dark:bg-blue-950/30 dark:text-blue-400">
+                      {bid.tender.service_type}
+                    </span>
+                  </div>
                 </div>
                 <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(bid.status)}`}>
-                  {bid.status.toUpperCase()}
+                  {bid.status.charAt(0).toUpperCase() + bid.status.slice(1)}
                 </span>
               </div>
 
@@ -339,7 +341,11 @@ export default function AllBidsPage() {
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3 pt-4 border-t border-gray-200 dark:border-gray-800">
                 <Link href={`/jmb/tender/${bid.tender_id}/bids`}>
-                  <Button variant="outline" className="text-sm">
+                  <Button 
+                    variant="outline" 
+                    className="text-sm !text-blue-700 !border-blue-300 hover:!bg-blue-50 dark:!text-blue-400 dark:!border-blue-800 dark:hover:!bg-blue-950/30"
+                    startIcon={<Eye className="w-4 h-4" />}
+                  >
                     View All Bids for This Tender
                   </Button>
                 </Link>
@@ -348,19 +354,19 @@ export default function AllBidsPage() {
                     <Button
                       onClick={() => handleUpdateBidStatus(bid.id, "approved")}
                       disabled={updatingBidId === bid.id}
-                      className="text-sm bg-emerald-600 hover:bg-emerald-700"
+                      className="text-sm bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-700"
+                      startIcon={<CircleCheck className="w-4 h-4" />}
                     >
-                      <CheckCircleIcon className="w-4 h-4 mr-1" />
                       {updatingBidId === bid.id ? "Updating..." : "Approve"}
                     </Button>
                     <Button
                       onClick={() => handleUpdateBidStatus(bid.id, "rejected")}
                       disabled={updatingBidId === bid.id}
                       variant="outline"
-                      className="text-sm text-rose-600 border-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/20"
+                      className="text-sm !text-rose-700 !border-rose-300 hover:!bg-rose-50 dark:!text-rose-400 dark:!border-rose-800 dark:hover:!bg-rose-950/30"
+                      startIcon={<CircleX className="w-4 h-4" />}
                     >
-                      <CloseIcon className="w-4 h-4 mr-1" />
-                      Reject
+                      {updatingBidId === bid.id ? "Updating..." : "Reject"}
                     </Button>
                   </>
                 )}

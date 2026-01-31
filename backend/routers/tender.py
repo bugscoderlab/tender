@@ -119,3 +119,40 @@ def update_tender(
     session.refresh(tender)
     
     return tender
+
+@router.put("/{tender_id}/approval")
+def update_tender_approval(
+    tender_id: int,
+    approval_data: dict,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_db)
+):
+    # Check if user is admin
+    if current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only admins can approve or reject tenders"
+        )
+    
+    tender = session.query(Tender).filter(Tender.id == tender_id).first()
+    if not tender:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Tender not found"
+        )
+    
+    # Update approval status
+    approval_status = approval_data.get("approval_status")
+    if approval_status not in ["approved", "rejected"]:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid approval status. Must be 'approved' or 'rejected'"
+        )
+    
+    tender.approval_status = approval_status
+    
+    session.commit()
+    session.refresh(tender)
+    
+    return {"message": f"Tender {approval_status} successfully", "tender": tender}
+
