@@ -72,3 +72,50 @@ def get_tender(
             detail="Tender not found"
         )
     return tender
+
+@router.put("/{tender_id}", response_model=TenderResponse)
+def update_tender(
+    tender_id: int,
+    tender_data: TenderCreateRequest,
+    current_user: User = Depends(get_current_user),
+    session: Session = Depends(get_db)
+):
+    tender = session.query(Tender).filter(Tender.id == tender_id).first()
+    if not tender:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Tender not found"
+        )
+    
+    # Check if user owns this tender
+    if tender.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not authorized to update this tender"
+        )
+    
+    # Update tender fields
+    tender.title = tender_data.title
+    tender.service_type = tender_data.service_type
+    tender.property_name = tender_data.property_name
+    tender.property_address = tender_data.property_address
+    tender.scope_of_work = tender_data.scope_of_work
+    tender.contract_period_months = tender_data.contract_period_months
+    tender.min_budget = tender_data.min_budget
+    tender.max_budget = tender_data.max_budget
+    tender.closing_date = tender_data.closing_date
+    tender.closing_time = tender_data.closing_time
+    tender.site_visit_date = tender_data.site_visit_date
+    tender.site_visit_time = tender_data.site_visit_time
+    tender.contact_person = tender_data.contact_person
+    tender.contact_email = tender_data.contact_email
+    tender.contact_phone = tender_data.contact_phone
+    tender.required_licenses = tender_data.required_licenses
+    tender.evaluation_criteria = [criteria.model_dump() for criteria in tender_data.evaluation_criteria]
+    tender.tender_fee = tender_data.tender_fee
+    tender.tender_documents = tender_data.tender_documents
+    
+    session.commit()
+    session.refresh(tender)
+    
+    return tender

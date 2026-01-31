@@ -1,6 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { PlusIcon, FileIcon } from "@/icons";
 import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
@@ -18,6 +19,7 @@ interface Tender {
 }
 
 export default function MyTendersPage() {
+  const router = useRouter();
   const [tenders, setTenders] = useState<Tender[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
@@ -162,14 +164,16 @@ export default function MyTendersPage() {
             </div>
         ) : (
             filteredTenders.map((tender) => (
-            <Link href={`/jmb/my-tenders/${tender.id}`} key={tender.id}>
             <div
-                className="p-5 bg-white border border-gray-200 rounded-xl dark:bg-gray-900 dark:border-gray-800 hover:shadow-md transition-shadow cursor-pointer"
+                key={tender.id}
+                className="p-5 bg-white border border-gray-200 rounded-xl dark:bg-gray-900 dark:border-gray-800 hover:shadow-md transition-shadow"
             >
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-3">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-white">
-                        {tender.title}
-                    </h3>
+                    <Link href={`/jmb/my-tenders/${tender.id}`} className="flex-1">
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-white hover:text-brand-500 dark:hover:text-brand-400">
+                            {tender.title}
+                        </h3>
+                    </Link>
                     <div className="flex flex-wrap items-center gap-2">
                         <span className="px-2.5 py-0.5 text-xs font-medium bg-gray-100 text-gray-800 rounded-full dark:bg-gray-800 dark:text-gray-300">
                             {tender.service_type}
@@ -191,20 +195,39 @@ export default function MyTendersPage() {
                     {tender.scope_of_work}
                 </p>
                 
-                <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
-                    <div className="flex items-center gap-1">
-                        <span className="font-medium text-gray-700 dark:text-gray-300">Duration:</span>
-                        {tender.contract_period_months} months
-                    </div>
-                    {(tender.min_budget || tender.max_budget) && (
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex flex-wrap items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                         <div className="flex items-center gap-1">
-                            <span className="font-medium text-gray-700 dark:text-gray-300">Budget:</span>
-                            RM {tender.min_budget || 0} - {tender.max_budget || 'N/A'}
+                            <span className="font-medium text-gray-700 dark:text-gray-300">Duration:</span>
+                            {tender.contract_period_months} months
                         </div>
-                    )}
+                        {(tender.min_budget || tender.max_budget) && (
+                            <div className="flex items-center gap-1">
+                                <span className="font-medium text-gray-700 dark:text-gray-300">Budget:</span>
+                                RM {tender.min_budget || 0} - {tender.max_budget || 'N/A'}
+                            </div>
+                        )}
+                    </div>
+                    <div className="flex gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                router.push(`/jmb/tender/${tender.id}`);
+                            }}
+                        >
+                            Edit
+                        </Button>
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                router.push(`/jmb/tender/${tender.id}/bids`);
+                            }}
+                        >
+                            View Bids
+                        </Button>
+                    </div>
                 </div>
             </div>
-            </Link>
             ))
         )}
       </div>
