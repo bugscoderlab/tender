@@ -37,6 +37,8 @@ export default function TenderBidsPage() {
   const [bids, setBids] = useState<Bid[]>([]);
   const [tender, setTender] = useState<Tender | null>(null);
   const [updatingBidId, setUpdatingBidId] = useState<number | null>(null);
+  const [sortBy, setSortBy] = useState<'price-low' | 'price-high' | 'experience' | 'date'>('price-low');
+  const [filterStatus, setFilterStatus] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
 
   useEffect(() => {
     fetchTenderAndBids();
@@ -157,6 +159,40 @@ export default function TenderBidsPage() {
     return { total, pending, approved, rejected, avgBid, lowestBid, highestBid };
   };
 
+  const getSortedAndFilteredBids = () => {
+    let filtered = [...bids];
+    
+    // Filter by status
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(b => b.status === filterStatus);
+    }
+    
+    // Sort
+    switch (sortBy) {
+      case 'price-low':
+        filtered.sort((a, b) => a.proposed_amount - b.proposed_amount);
+        break;
+      case 'price-high':
+        filtered.sort((a, b) => b.proposed_amount - a.proposed_amount);
+        break;
+      case 'experience':
+        filtered.sort((a, b) => (b.years_of_experience || 0) - (a.years_of_experience || 0));
+        break;
+      case 'date':
+        filtered.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+    }
+    
+    return filtered;
+  };
+
+  const getLowestBid = () => {
+    if (bids.length === 0) return null;
+    return bids.reduce((lowest, bid) => 
+      bid.proposed_amount < lowest.proposed_amount ? bid : lowest
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -248,20 +284,64 @@ export default function TenderBidsPage() {
         </div>
       )}
 
+      {/* Sort and Filter Controls */}
+      <div className="mb-6 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+        <div className="flex gap-2">
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
+          >
+            <option value="price-low">💰 Lowest Price First</option>
+            <option value="price-high">💰 Highest Price First</option>
+            <option value="experience">🏆 Most Experience</option>
+            <option value="date">📅 Most Recent</option>
+          </select>
+          
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value as any)}
+            className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800 text-gray-800 dark:text-white"
+          >
+            <option value="all">All Status</option>
+            <option value="pending">Pending Only</option>
+            <option value="approved">Approved Only</option>
+            <option value="rejected">Rejected Only</option>
+          </select>
+        </div>
+        
+        <div className="text-sm text-gray-600 dark:text-gray-400">
+          Showing {getSortedAndFilteredBids().length} of {stats.total} bids
+        </div>
+      </div>
+
       {/* Bids List */}
       <div className="space-y-4">
-        {bids.length === 0 ? (
+        {getSortedAndFilteredBids().length === 0 ? (
           <div className="bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800 p-12 text-center">
             <p className="text-gray-500 dark:text-gray-400">
-              No bids received yet
+              {filterStatus === 'all' ? 'No bids received yet' : `No ${filterStatus} bids`}
             </p>
           </div>
         ) : (
-          bids.map((bid) => (
+          getSortedAndFilteredBids().map((bid) => {
+            const lowestBid = getLowestBid();
+            const isLowestBid = lowestBid?.id === bid.id;
+            
+            return (
             <div
               key={bid.id}
-              className="bg-white border border-gray-200 rounded-2xl dark:bg-gray-900 dark:border-gray-800 p-6"
+              className={`bg-white border-2 rounded-2xl dark:bg-gray-900 p-6 relative ${
+                isLowestBid 
+                  ? 'border-green-500 dark:border-green-500' 
+                  : 'border-gray-200 dark:border-gray-800'
+              }`}
             >
+              {isLowestBid && (
+                <div className="absolute -top-3 left-6 px-3 py-1 bg-green-500 text-white text-xs font-bold rounded-full">
+                  🏆 LOWEST BID
+                </div>
+              )}
               <div className="flex justify-between items-start mb-4">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800 dark:text-white">
@@ -338,7 +418,8 @@ export default function TenderBidsPage() {
                 )}
               </div>
             </div>
-          ))
+          );
+          })
         )}
       </div>
     </div>

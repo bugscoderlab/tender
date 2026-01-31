@@ -8,11 +8,14 @@ import {
   FileIcon,
   BellIcon,
   ArrowRightIcon,
+  ListIcon,
+  DocsIcon,
 } from "@/icons/index";
 
 type NavItem = {
   name: string;
   icon: React.ReactNode;
+  iconColor: string;
   path?: string;
   subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
@@ -20,35 +23,55 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <GridIcon />,
+    iconColor: "text-blue-600 dark:text-blue-400",
     name: "Dashboard",
     path: "/contractor/dashboard",
   },
   {
-    icon: <FileIcon />,
+    icon: <ListIcon />,
+    iconColor: "text-purple-800 dark:text-purple-400",
     name: "Browse Tenders",
     path: "/contractor/tenders",
   },
-  // {
-  //   icon: <BellIcon />,
-  //   name: "Notifications",
-  //   path: "/contractor/notifications",
-  // },
+  {
+    icon: <DocsIcon />,
+    iconColor: "text-emerald-800 dark:text-emerald-400",
+    name: "My Bids",
+    path: "/contractor/my-bids",
+  },
 ];
 
 const ContractorSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
-  const [userEmail, setUserEmail] = useState<string>("rikaby@mailinator.com");
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userName, setUserName] = useState<string>("");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const storedEmail = localStorage.getItem("user_email");
-      if (storedEmail) {
-        // Use setTimeout to avoid synchronous state update warning
-        setTimeout(() => setUserEmail(storedEmail), 0);
-      }
-    }
+    fetchUserData();
   }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const token = localStorage.getItem("access_token");
+      if (!token) return;
+
+      const response = await fetch("http://localhost:8000/users/me", {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setUserEmail(data.email || "");
+        setUserName(data.name && data.name !== "null" && data.name !== "NULL" ? data.name : "");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+    }
+  };
 
   const renderNavItem = (navItem: NavItem) => {
     const isActive = pathname === navItem.path;
@@ -62,13 +85,7 @@ const ContractorSidebar: React.FC = () => {
               : "text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5"
           }`}
         >
-          <span
-            className={`${
-              isActive
-                ? "text-brand-500 dark:text-brand-400"
-                : "text-gray-500 group-hover:text-gray-700 dark:text-gray-400 dark:group-hover:text-gray-200"
-            }`}
-          >
+          <span className={navItem.iconColor}>
             {navItem.icon}
           </span>
           <span
