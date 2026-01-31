@@ -10,6 +10,7 @@ import {
   BellIcon,
   ChevronDownIcon,
   ArrowRightIcon,
+  FileIcon,
 } from "@/icons/index";
 
 type NavItem = {
@@ -31,10 +32,15 @@ const navItems: NavItem[] = [
     path: "/jmb/my-tenders",
   },
   {
-    icon: <BellIcon />,
-    name: "Notifications",
-    path: "/jmb/notifications",
+    icon: <FileIcon />,
+    name: "All Bids",
+    path: "/jmb/all-bids",
   },
+  // {
+  //   icon: <BellIcon />,
+  //   name: "Notifications",
+  //   path: "/jmb/notifications",
+  // },
 ];
 
 const JMBSidebar: React.FC = () => {

@@ -16,6 +16,7 @@ interface Tender {
   min_budget: number | null;
   max_budget: number | null;
   scope_of_work: string;
+  bid_count?: number;
 }
 
 export default function MyTendersPage() {
@@ -24,6 +25,7 @@ export default function MyTendersPage() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [serviceFilter, setServiceFilter] = useState("All Service Types");
+  const [bidCounts, setBidCounts] = useState<Record<number, number>>({});
 
   useEffect(() => {
     fetchTenders();
@@ -89,6 +91,9 @@ export default function MyTendersPage() {
             // Now filter by userId
             const myTenders = data.filter((t: any) => String(t.user_id) === String(userId));
             setTenders(myTenders);
+            
+            // Fetch bid counts for each tender
+            fetchBidCounts(myTenders, token);
         } catch (e) {
             console.error("Error parsing token", e);
             setTenders(data); // Fallback to all
@@ -99,6 +104,32 @@ export default function MyTendersPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const fetchBidCounts = async (tenderList: Tender[], token: string) => {
+    const counts: Record<number, number> = {};
+    
+    for (const tender of tenderList) {
+      try {
+        const response = await fetch(`http://localhost:8000/bids/tender/${tender.id}`, {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+          }
+        });
+        
+        if (response.ok) {
+          const bids = await response.json();
+          counts[tender.id] = bids.length;
+        } else {
+          counts[tender.id] = 0;
+        }
+      } catch (error) {
+        counts[tender.id] = 0;
+      }
+    }
+    
+    setBidCounts(counts);
   };
 
   const filteredTenders = tenders.filter((tender) => {
@@ -185,6 +216,11 @@ export default function MyTendersPage() {
                         }`}>
                             {tender.status === 'open' ? 'Pending Approval' : tender.status} 
                         </span>
+                        {bidCounts[tender.id] !== undefined && bidCounts[tender.id] > 0 && (
+                            <span className="px-2.5 py-0.5 text-xs font-medium bg-brand-50 text-brand-600 rounded-full dark:bg-brand-500/10 dark:text-brand-400 flex items-center gap-1">
+                                📨 {bidCounts[tender.id]} {bidCounts[tender.id] === 1 ? 'bid' : 'bids'}
+                            </span>
+                        )}
                         <span className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
                              📅 {new Date(tender.closing_date).toLocaleDateString()}
                         </span>

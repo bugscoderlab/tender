@@ -28,11 +28,11 @@ const navItems: NavItem[] = [
     name: "Browse Tenders",
     path: "/contractor/tenders",
   },
-  {
-    icon: <BellIcon />,
-    name: "Notifications",
-    path: "/contractor/notifications",
-  },
+  // {
+  //   icon: <BellIcon />,
+  //   name: "Notifications",
+  //   path: "/contractor/notifications",
+  // },
 ];
 
 const ContractorSidebar: React.FC = () => {
