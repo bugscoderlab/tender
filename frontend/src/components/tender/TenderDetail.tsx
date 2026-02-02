@@ -17,6 +17,7 @@ import {
 } from "@/icons";
 
 import Button from "@/components/ui/button/Button";
+import { API_BASE_URL } from "@/config";
 
 interface EvaluationCriterion {
   criteria: string;
@@ -74,7 +75,7 @@ export default function TenderDetail({ tenderId, backUrl, backLabel, userType }:
         return;
       }
 
-      const response = await fetch(`http://localhost:8000/tenders/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/tenders/${id}`, {
         headers: {
           "Authorization": `Bearer ${token}`,
         },

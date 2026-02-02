@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { ChevronLeftIcon } from "@/icons";
 import Button from "@/components/ui/button/Button";
+import { API_BASE_URL } from "@/config";
 
 interface EvaluationCriteria {
   criteria: string;
@@ -56,7 +57,7 @@ export default function ContractorTenderDetailsPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:8000/tenders/${tenderId}`, {
+      const response = await fetch(`${API_BASE_URL}/tenders/${tenderId}`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -81,7 +82,7 @@ export default function ContractorTenderDetailsPage() {
       const token = localStorage.getItem("access_token");
       if (!token) return;
 
-      const response = await fetch("http://localhost:8000/bids/my-bids", {
+      const response = await fetch(`${API_BASE_URL}/bids/my-bids`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"

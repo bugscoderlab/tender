@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useState, useEffect } from "react";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
+import { API_BASE_URL } from "@/config";
 
 interface UserData {
   id: number;
@@ -29,7 +30,7 @@ export default function UserDropdown() {
         return;
       }
 
-      const response = await fetch("http://localhost:8000/users/me", {
+      const response = await fetch(`${API_BASE_URL}/users/me`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"

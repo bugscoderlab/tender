@@ -57,7 +57,7 @@ const ContractorSidebar: React.FC = () => {
       const token = localStorage.getItem("access_token");
       if (!token) return;
 
-      const response = await fetch("http://localhost:8000/users/me", {
+      const response = await fetch(`${API_BASE_URL}/users/me`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"

@@ -29,6 +29,8 @@ interface Tender {
   max_budget?: number;
 }
 
+import { API_BASE_URL } from "@/config";
+
 export default function TenderBidsPage() {
   const router = useRouter();
   const params = useParams();
@@ -54,7 +56,7 @@ export default function TenderBidsPage() {
       }
 
       // Fetch tender details
-      const tenderResponse = await fetch(`http://localhost:8000/tenders/${tenderId}`, {
+      const tenderResponse = await fetch(`${API_BASE_URL}/tenders/${tenderId}`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -67,7 +69,7 @@ export default function TenderBidsPage() {
       }
 
       // Fetch bids
-      const bidsResponse = await fetch(`http://localhost:8000/bids/tender/${tenderId}`, {
+      const bidsResponse = await fetch(`${API_BASE_URL}/bids/tender/${tenderId}`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -96,7 +98,7 @@ export default function TenderBidsPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:8000/bids/${bidId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/bids/${bidId}/status`, {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,

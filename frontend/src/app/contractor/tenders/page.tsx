@@ -38,7 +38,7 @@ export default function ContractorTendersPage() {
         return;
       }
 
-      const response = await fetch("http://localhost:8000/tenders/", {
+      const response = await fetch(`${API_BASE_URL}/tenders/`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"

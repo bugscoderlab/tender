@@ -38,7 +38,9 @@ interface TenderData {
   tender_documents?: string[];
 }
 
-export default function TenderDetailPage() {
+import { API_BASE_URL } from "@/config";
+
+export default function TenderDetails() {
   const router = useRouter();
   const params = useParams();
   const tenderId = params.id as string;
@@ -86,7 +88,7 @@ export default function TenderDetailPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:8000/tenders/${tenderId}`, {
+      const response = await fetch(`${API_BASE_URL}/tenders/${tenderId}`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -191,7 +193,7 @@ export default function TenderDetailPage() {
       }
 
       // Verify token is still valid
-      const verifyResponse = await fetch("http://localhost:8000/users/me", {
+      const verifyResponse = await fetch(`${API_BASE_URL}/users/me`, {
         headers: {
           "Authorization": `Bearer ${token}`,
         },
@@ -225,7 +227,7 @@ export default function TenderDetailPage() {
         tender_documents: [],
       };
 
-      const response = await fetch(`http://localhost:8000/tenders/${tenderId}`, {
+      const response = await fetch(`${API_BASE_URL}/tenders/${tenderId}`, {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,

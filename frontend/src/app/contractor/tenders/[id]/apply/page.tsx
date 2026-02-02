@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { ChevronLeftIcon } from "@/icons";
 import Button from "@/components/ui/button/Button";
 import Input from "@/components/form/input/InputField";
+import { API_BASE_URL } from "@/config";
 
 interface TenderData {
   id: number;
@@ -45,7 +46,7 @@ export default function ApplyBidPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:8000/tenders/${tenderId}`, {
+      const response = await fetch(`${API_BASE_URL}/tenders/${tenderId}`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -106,7 +107,7 @@ export default function ApplyBidPage() {
         proposal_document: formData.proposal_document || undefined
       };
 
-      const response = await fetch("http://localhost:8000/bids/", {
+      const response = await fetch(`${API_BASE_URL}/bids/`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,

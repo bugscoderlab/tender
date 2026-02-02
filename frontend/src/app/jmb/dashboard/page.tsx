@@ -24,6 +24,8 @@ interface Tender {
   property_name?: string;
 }
 
+import { API_BASE_URL } from "@/config";
+
 export default function JMBDashboard() {
   const [tenders, setTenders] = useState<Tender[]>([]);
   const [loading, setLoading] = useState(true);
@@ -46,7 +48,7 @@ export default function JMBDashboard() {
         return;
       }
 
-      const response = await fetch("http://localhost:8000/tenders/", {
+      const response = await fetch(`${API_BASE_URL}/tenders/`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"

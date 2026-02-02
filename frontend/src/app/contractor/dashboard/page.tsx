@@ -13,6 +13,7 @@ import Button from "@/components/ui/button/Button";
 import Badge from "@/components/ui/badge/Badge";
 import StatCard from "@/components/shared/StatCard";
 import ActionCard from "@/components/shared/ActionCard";
+import { API_BASE_URL } from "@/config";
 
 interface Tender {
   id: number;
@@ -56,7 +57,7 @@ export default function ContractorDashboard() {
       }
 
       // Fetch available tenders
-      const tendersResponse = await fetch("http://localhost:8000/tenders/", {
+      const tendersResponse = await fetch(`${API_BASE_URL}/tenders/`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -72,7 +73,7 @@ export default function ContractorDashboard() {
       }
 
       // Fetch my bids
-      const bidsResponse = await fetch("http://localhost:8000/bids/my-bids", {
+      const bidsResponse = await fetch(`${API_BASE_URL}/bids/my-bids`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"

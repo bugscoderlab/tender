@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Button from "@/components/ui/button/Button";
 import StatCard from "@/components/shared/StatCard";
+import { API_BASE_URL } from "@/config";
 
 interface Tender {
   id: number;
@@ -48,7 +49,7 @@ export default function AdminDashboard() {
         return;
       }
 
-      const response = await fetch("http://localhost:8000/tenders/", {
+      const response = await fetch(`${API_BASE_URL}/tenders/`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -76,7 +77,7 @@ export default function AdminDashboard() {
         return;
       }
 
-      const response = await fetch(`http://localhost:8000/tenders/${tenderId}/approval`, {
+      const response = await fetch(`${API_BASE_URL}/tenders/${tenderId}/approval`, {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,

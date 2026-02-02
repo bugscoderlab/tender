@@ -8,6 +8,7 @@ import Label from "@/components/form/Label";
 import TextArea from "@/components/form/input/TextArea";
 import Button from "@/components/ui/button/Button";
 import Stepper, { Step } from "@/components/ui/stepper/Stepper";
+import { API_BASE_URL } from "@/config";
 
 interface EvaluationCriteria {
   criteria: string;
@@ -185,7 +186,7 @@ export default function CreateTenderPage() {
       }
 
       // Verify token is still valid before submitting
-      const verifyResponse = await fetch("http://localhost:8000/users/me", {
+      const verifyResponse = await fetch(`${API_BASE_URL}/users/me`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -212,7 +213,7 @@ export default function CreateTenderPage() {
         site_visit_time: formData.site_visit_time || null,
       };
 
-      const response = await fetch("http://localhost:8000/tenders/create", {
+      const response = await fetch(`${API_BASE_URL}/tenders/create`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

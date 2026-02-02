@@ -6,6 +6,7 @@ import { PlusIcon, FileIcon } from "@/icons";
 import { Plus, Pencil, Eye, CalendarDays, CircleDollarSign } from 'lucide-react';
 import Input from "@/components/form/input/InputField";
 import Button from "@/components/ui/button/Button";
+import { API_BASE_URL } from "@/config";
 
 interface Tender {
   id: number;
@@ -63,7 +64,7 @@ export default function MyTendersPage() {
       // Quick fix: Let's fetch all and filter client side if necessary, OR better:
       // Let's decode the token to get the user ID? The token has `sub` which is user_id.
       
-      const response = await fetch("http://localhost:8000/tenders/", {
+      const response = await fetch(`${API_BASE_URL}/tenders/`, {
         headers: {
             "Authorization": `Bearer ${token}`
         }
@@ -112,7 +113,7 @@ export default function MyTendersPage() {
     
     for (const tender of tenderList) {
       try {
-        const response = await fetch(`http://localhost:8000/bids/tender/${tender.id}`, {
+        const response = await fetch(`${API_BASE_URL}/bids/tender/${tender.id}`, {
           headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json"

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/button/Button";
+import { API_BASE_URL } from "@/config";
 
 interface Bid {
   id: number;
@@ -37,7 +38,7 @@ export default function ContractorMyBidsPage() {
         return;
       }
 
-      const response = await fetch("http://localhost:8000/bids/my-bids", {
+      const response = await fetch(`${API_BASE_URL}/bids/my-bids`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"

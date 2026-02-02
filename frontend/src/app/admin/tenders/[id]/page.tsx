@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { CircleCheck, CircleX, MapPin, CalendarDays, CircleDollarSign, FileText } from "lucide-react";
 import Button from "@/components/ui/button/Button";
+import { API_BASE_URL } from "@/config";
 
 interface Tender {
   id: number;
@@ -41,7 +42,7 @@ export default function AdminTenderDetail() {
         return;
       }
 
-      const response = await fetch(`http://localhost:8000/tenders/${tenderId}`, {
+      const response = await fetch(`${API_BASE_URL}/tenders/${tenderId}`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -71,7 +72,7 @@ export default function AdminTenderDetail() {
         return;
       }
 
-      const response = await fetch(`http://localhost:8000/tenders/${tender.id}/approval`, {
+      const response = await fetch(`${API_BASE_URL}/tenders/${tender.id}/approval`, {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,

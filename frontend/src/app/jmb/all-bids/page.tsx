@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CircleCheck, Eye, CircleX } from "lucide-react";
 import Button from "@/components/ui/button/Button";
+import { API_BASE_URL } from "@/config";
 
 interface Bid {
   id: number;
@@ -55,7 +56,7 @@ export default function AllBidsPage() {
       const userId = payload.sub;
 
       // Fetch all tenders for this user
-      const tendersResponse = await fetch("http://localhost:8000/tenders/", {
+      const tendersResponse = await fetch(`${API_BASE_URL}/tenders/`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json"
@@ -68,7 +69,7 @@ export default function AllBidsPage() {
 
         // Fetch bids for each tender
         const allBidsPromises = myTenders.map((tender: any) =>
-          fetch(`http://localhost:8000/bids/tender/${tender.id}`, {
+          fetch(`${API_BASE_URL}/bids/tender/${tender.id}`, {
             headers: {
               "Authorization": `Bearer ${token}`,
               "Content-Type": "application/json"
@@ -96,7 +97,7 @@ export default function AllBidsPage() {
         return;
       }
 
-      const response = await fetch(`http://localhost:8000/bids/${bidId}/status`, {
+      const response = await fetch(`${API_BASE_URL}/bids/${bidId}/status`, {
         method: "PUT",
         headers: {
           "Authorization": `Bearer ${token}`,

@@ -8,6 +8,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
+import { API_BASE_URL } from "@/config";
+
 export default function SignInForm() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -37,8 +39,8 @@ export default function SignInForm() {
     body.append("client_secret", "");
 
     try {
-      console.log("Sending request to:", "http://localhost:8000/users/login"); // Debug log
-      const response = await fetch("http://localhost:8000/users/login", {
+      console.log("Sending request to:", `${API_BASE_URL}/users/login`); // Debug log
+      const response = await fetch(`${API_BASE_URL}/users/login`, {
         method: "POST",
         headers: {
           "Accept": "application/json",

@@ -50,7 +50,7 @@ function ContractorDetailsContent() {
     };
 
     try {
-      const response = await fetch("http://localhost:8000/users/register/update", {
+      const response = await fetch(`${API_BASE_URL}/users/register/update`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
