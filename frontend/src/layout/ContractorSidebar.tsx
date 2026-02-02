@@ -12,6 +12,7 @@ import {
   DocsIcon,
 } from "@/icons/index";
 import {CircleDollarSign, ClipboardList} from 'lucide-react';
+import { API_BASE_URL } from "@/config";
 
 type NavItem = {
   name: string;
