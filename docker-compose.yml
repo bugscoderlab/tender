@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: fastapi
+    volumes:
+      - ./data:/data
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: nextjs
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://68.183.177.183:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
