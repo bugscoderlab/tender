@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useSidebar } from "@/context/SidebarContext";
 import { ArrowRightIcon } from "@/icons/index";
 import { LayoutDashboard, ShieldCheck } from "lucide-react";
+import { API_BASE_URL } from "@/config";
 
 type NavItem = {
   name: string;

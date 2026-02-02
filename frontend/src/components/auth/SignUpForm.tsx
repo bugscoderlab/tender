@@ -7,6 +7,8 @@ import Link from "next/link";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import React, { useState, Suspense, useCallback } from "react";
 
+import { API_BASE_URL } from "@/config";
+
 function SignUpFormContent() {
   const router = useRouter();
   const pathname = usePathname();
