@@ -7,6 +7,7 @@ import Input from "@/components/form/input/InputField";
 import Label from "@/components/form/Label";
 import Checkbox from "@/components/form/input/Checkbox";
 import Button from "@/components/ui/button/Button";
+import { API_BASE_URL } from "@/config";
 
 function ContractorDetailsContent() {
   const router = useRouter();
